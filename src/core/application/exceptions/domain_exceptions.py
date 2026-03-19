@@ -53,3 +53,19 @@ class InsufficientBalanceError(DomainException):
     def __init__(self, message: str = "Insufficient balance"):
         self.message = message
         super().__init__(self.message)
+
+
+class PaymentExpiredError(DomainException):
+    """Excepción cuando un pago ha expirado."""
+
+    def __init__(self, message: str = "Payment expired"):
+        self.message = message
+        super().__init__(self.message)
+
+
+class PaymentAlreadyCompletedError(DomainException):
+    """Excepción cuando un pago ya está completado."""
+
+    def __init__(self, message: str = "Payment already completed"):
+        self.message = message
+        super().__init__(self.message)
