@@ -29,7 +29,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install dependencies
-        run: uv sync --frozen --group dev
+        run: uv sync --frozen
 
       - name: Ruff check
         run: uv run ruff check src/ tests/
@@ -70,7 +70,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install dependencies
-        run: uv sync --frozen --group dev
+        run: uv sync --frozen
 
       - name: Run unit tests
         run: |
@@ -103,7 +103,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install dependencies
-        run: uv sync --frozen --group dev
+        run: uv sync --frozen
 
       - name: Run mypy
         run: uv run mypy src/
@@ -126,7 +126,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install dependencies
-        run: uv sync --frozen --group dev
+        run: uv sync --frozen
 
       - name: Run bandit
         run: uv run bandit -r src/ -ll -ii
