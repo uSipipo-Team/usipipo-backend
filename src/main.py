@@ -1,11 +1,12 @@
 """FastAPI application entry point."""
 
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
-from .infrastructure.persistence.database import init_db, close_db
 from .infrastructure.api.v1.routes.auth import router as auth_router
 from .infrastructure.api.v1.routes.vpn import router as vpn_router
+from .infrastructure.persistence.database import close_db, init_db
 from .shared.config import settings
 
 

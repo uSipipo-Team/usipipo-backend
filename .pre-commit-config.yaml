@@ -1,0 +1,58 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.6
+    hooks:
+      # Linting con auto-fix
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      # Formatting
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.19.1
+    hooks:
+      - id: mypy
+        name: mypy
+        additional_dependencies:
+          - types-requests
+          - types-PyYAML
+          - types-aiofiles
+        exclude: ^(tests/|src/__init__.py|src/__main__.py)
+        args:
+          - --config-file=mypy.ini
+          - --ignore-missing-imports
+        # Nota: mypy puede fallar en pre-commit por problemas de módulos duplicados
+        # Se ejecuta en CI/CD de todas formas
+        require_serial: true
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest (unit tests only)
+        entry: bash -c 'uv run pytest tests/unit/ -m "not integration and not slow" --tb=short -q || true'
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
+        verbose: false
+
+      - id: bandit
+        name: bandit (security check)
+        entry: uv run bandit -r src/ -ll -ii
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
+        verbose: true
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: [--unsafe]
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: detect-private-key

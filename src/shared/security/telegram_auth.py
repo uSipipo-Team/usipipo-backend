@@ -3,13 +3,12 @@
 import hashlib
 import hmac
 import json
-from typing import Dict, Optional
 from urllib.parse import parse_qs
 
 from ...shared.config import settings
 
 
-def validate_telegram_init_data(init_data: str) -> Optional[Dict[str, str]]:
+def validate_telegram_init_data(init_data: str) -> dict[str, str] | None:
     """
     Valida initData de Telegram WebApp.
 
@@ -30,9 +29,7 @@ def validate_telegram_init_data(init_data: str) -> Optional[Dict[str, str]]:
             return None
 
         # Ordenar datos para hashing
-        data_check_string = "\n".join(
-            f"{k}={v}" for k, v in sorted(data.items())
-        )
+        data_check_string = "\n".join(f"{k}={v}" for k, v in sorted(data.items()))
 
         # Crear secret key desde BOT_TOKEN
         secret_key = hmac.new(
@@ -58,7 +55,7 @@ def validate_telegram_init_data(init_data: str) -> Optional[Dict[str, str]]:
         return None
 
 
-def extract_user_from_telegram_data(data: Dict[str, str]) -> dict:
+def extract_user_from_telegram_data(data: dict[str, str]) -> dict:
     """
     Extrae información del usuario desde Telegram initData.
 

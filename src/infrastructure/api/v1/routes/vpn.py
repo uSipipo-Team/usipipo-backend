@@ -1,25 +1,24 @@
 """Routes para gestión de claves VPN."""
 
-from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from usipipo_commons.domain.entities.user import User
 
 from src.core.application.services.vpn_service import VpnService
+from src.infrastructure.api.v1.deps import get_current_user, get_vpn_service
 from src.shared.schemas.vpn import (
-    VpnKeyResponse,
     CreateVpnKeyRequest,
     UpdateVpnKeyRequest,
+    VpnKeyResponse,
 )
-from src.infrastructure.api.v1.deps import get_current_user, get_vpn_service
-from usipipo_commons.domain.entities.user import User
 
 router = APIRouter(prefix="/vpn", tags=["VPN Keys"])
 
 
 @router.get(
     "/keys",
-    response_model=List[VpnKeyResponse],
+    response_model=list[VpnKeyResponse],
     status_code=status.HTTP_200_OK,
 )
 async def list_vpn_keys(

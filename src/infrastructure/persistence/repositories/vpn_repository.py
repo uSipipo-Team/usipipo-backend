@@ -1,12 +1,11 @@
 """Repositorio de claves VPN con SQLAlchemy."""
 
-from typing import List, Optional
 from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from usipipo_commons.domain.entities.vpn_key import VpnKey
+
 from src.core.domain.interfaces.i_vpn_repository import IVPNRepository
 from src.infrastructure.persistence.models.vpn_key_model import VpnKeyModel
 
@@ -17,7 +16,7 @@ class VpnRepository(IVPNRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, key_id: UUID) -> Optional[VpnKey]:
+    async def get_by_id(self, key_id: UUID) -> VpnKey | None:
         """
         Obtiene clave VPN por ID.
 
@@ -27,13 +26,11 @@ class VpnRepository(IVPNRepository):
         Returns:
             VpnKey o None si no existe
         """
-        result = await self.session.execute(
-            select(VpnKeyModel).where(VpnKeyModel.id == key_id)
-        )
+        result = await self.session.execute(select(VpnKeyModel).where(VpnKeyModel.id == key_id))
         model = result.scalar_one_or_none()
         return model.to_entity() if model else None
 
-    async def get_by_user_id(self, user_id: UUID) -> List[VpnKey]:
+    async def get_by_user_id(self, user_id: UUID) -> list[VpnKey]:
         """
         Obtiene todas las claves VPN de un usuario.
 
@@ -91,9 +88,7 @@ class VpnRepository(IVPNRepository):
         Returns:
             True si se eliminó, False si no existía
         """
-        result = await self.session.execute(
-            select(VpnKeyModel).where(VpnKeyModel.id == key_id)
-        )
+        result = await self.session.execute(select(VpnKeyModel).where(VpnKeyModel.id == key_id))
         model = result.scalar_one_or_none()
         if model:
             await self.session.delete(model)

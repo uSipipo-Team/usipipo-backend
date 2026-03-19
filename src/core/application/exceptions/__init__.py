@@ -2,12 +2,12 @@
 
 from .domain_exceptions import (
     DomainException,
-    UserNotFoundError,
-    VpnKeyNotFoundError,
-    VpnKeyLimitReachedError,
+    InsufficientBalanceError,
     InvalidVpnTypeError,
     PaymentNotFoundError,
-    InsufficientBalanceError,
+    UserNotFoundError,
+    VpnKeyLimitReachedError,
+    VpnKeyNotFoundError,
 )
 
 __all__ = [

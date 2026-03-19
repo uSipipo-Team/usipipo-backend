@@ -2,14 +2,14 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from src.shared.schemas.auth import TelegramAuthRequest, AuthResponse
-from src.shared.security.telegram_auth import (
-    validate_telegram_init_data,
-    extract_user_from_telegram_data,
-)
-from src.shared.security.jwt import create_jwt_token
-from src.infrastructure.api.v1.deps import get_user_service
 from src.core.application.services.user_service import UserService
+from src.infrastructure.api.v1.deps import get_user_service
+from src.shared.schemas.auth import AuthResponse, TelegramAuthRequest
+from src.shared.security.jwt import create_jwt_token
+from src.shared.security.telegram_auth import (
+    extract_user_from_telegram_data,
+    validate_telegram_init_data,
+)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 

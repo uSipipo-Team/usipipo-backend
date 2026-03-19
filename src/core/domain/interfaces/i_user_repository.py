@@ -1,7 +1,6 @@
 """Interfaces de repositorio para la capa de dominio."""
 
 from abc import ABC, abstractmethod
-from typing import Optional
 from uuid import UUID
 
 from usipipo_commons.domain.entities.user import User
@@ -11,12 +10,12 @@ class IUserRepository(ABC):
     """Contrato para repositorio de usuarios."""
 
     @abstractmethod
-    async def get_by_id(self, user_id: UUID) -> Optional[User]:
+    async def get_by_id(self, user_id: UUID) -> User | None:
         """Obtiene usuario por ID."""
         pass
 
     @abstractmethod
-    async def get_by_telegram_id(self, telegram_id: int) -> Optional[User]:
+    async def get_by_telegram_id(self, telegram_id: int) -> User | None:
         """Obtiene usuario por Telegram ID."""
         pass
 

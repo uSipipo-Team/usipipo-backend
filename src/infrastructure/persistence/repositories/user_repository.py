@@ -1,12 +1,11 @@
 """Repositorio de usuarios con SQLAlchemy."""
 
-from typing import Optional
 from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from usipipo_commons.domain.entities.user import User
+
 from src.core.domain.interfaces.i_user_repository import IUserRepository
 from src.infrastructure.persistence.models.user_model import UserModel
 
@@ -17,7 +16,7 @@ class UserRepository(IUserRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, user_id: UUID) -> Optional[User]:
+    async def get_by_id(self, user_id: UUID) -> User | None:
         """
         Obtiene usuario por ID.
 
@@ -27,13 +26,11 @@ class UserRepository(IUserRepository):
         Returns:
             User o None si no existe
         """
-        result = await self.session.execute(
-            select(UserModel).where(UserModel.id == user_id)
-        )
+        result = await self.session.execute(select(UserModel).where(UserModel.id == user_id))
         model = result.scalar_one_or_none()
         return model.to_entity() if model else None
 
-    async def get_by_telegram_id(self, telegram_id: int) -> Optional[User]:
+    async def get_by_telegram_id(self, telegram_id: int) -> User | None:
         """
         Obtiene usuario por Telegram ID.
 
@@ -91,9 +88,7 @@ class UserRepository(IUserRepository):
         Returns:
             True si se eliminó, False si no existía
         """
-        result = await self.session.execute(
-            select(UserModel).where(UserModel.id == user_id)
-        )
+        result = await self.session.execute(select(UserModel).where(UserModel.id == user_id))
         model = result.scalar_one_or_none()
         if model:
             await self.session.delete(model)

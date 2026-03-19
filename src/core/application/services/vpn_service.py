@@ -2,22 +2,20 @@
 
 import uuid
 from datetime import datetime, timedelta
-from typing import List, Optional
 
-from usipipo_commons.constants.plans import FREE_KEYS_LIMIT, MAX_KEYS_PER_USER
+from usipipo_commons.constants.plans import MAX_KEYS_PER_USER
 from usipipo_commons.domain.entities.vpn_key import VpnKey
-from usipipo_commons.domain.enums.vpn_type import VpnType
 from usipipo_commons.domain.enums.key_status import KeyStatus
-from usipipo_commons.domain.entities.user import User
+from usipipo_commons.domain.enums.vpn_type import VpnType
 
-from src.core.domain.interfaces.i_user_repository import IUserRepository
-from src.core.domain.interfaces.i_vpn_repository import IVPNRepository
 from src.core.application.exceptions import (
+    InvalidVpnTypeError,
     UserNotFoundError,
     VpnKeyLimitReachedError,
     VpnKeyNotFoundError,
-    InvalidVpnTypeError,
 )
+from src.core.domain.interfaces.i_user_repository import IUserRepository
+from src.core.domain.interfaces.i_vpn_repository import IVPNRepository
 
 
 class VpnService:
@@ -69,11 +67,9 @@ class VpnService:
         # Verificar límite de claves
         existing_keys = await self.vpn_repo.get_by_user_id(user_id)
         active_keys = [k for k in existing_keys if k.status == KeyStatus.ACTIVE]
-        
+
         if len(active_keys) >= MAX_KEYS_PER_USER:
-            raise VpnKeyLimitReachedError(
-                f"User reached max keys ({MAX_KEYS_PER_USER})"
-            )
+            raise VpnKeyLimitReachedError(f"User reached max keys ({MAX_KEYS_PER_USER})")
 
         # Generar config según tipo de VPN
         # NOTA: Esto se implementará cuando se conecte con los proveedores VPN
@@ -100,7 +96,7 @@ class VpnService:
         # Persistir
         return await self.vpn_repo.create(vpn_key)
 
-    async def get_key_by_id(self, key_id: uuid.UUID) -> Optional[VpnKey]:
+    async def get_key_by_id(self, key_id: uuid.UUID) -> VpnKey | None:
         """
         Obtiene una clave VPN por ID.
 
@@ -112,7 +108,7 @@ class VpnService:
         """
         return await self.vpn_repo.get_by_id(key_id)
 
-    async def get_user_keys(self, user_id: uuid.UUID) -> List[VpnKey]:
+    async def get_user_keys(self, user_id: uuid.UUID) -> list[VpnKey]:
         """
         Obtiene todas las claves VPN de un usuario.
 
@@ -157,8 +153,8 @@ class VpnService:
         self,
         user_id: uuid.UUID,
         key_id: uuid.UUID,
-        name: Optional[str] = None,
-        data_limit_gb: Optional[float] = None,
+        name: str | None = None,
+        data_limit_gb: float | None = None,
     ) -> VpnKey:
         """
         Actualiza una clave VPN.

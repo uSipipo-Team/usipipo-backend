@@ -1,20 +1,19 @@
 """Configuración de fixtures para tests."""
 
-import pytest
-from typing import AsyncGenerator
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from sqlalchemy.pool import StaticPool
+from collections.abc import AsyncGenerator
+from datetime import UTC, datetime
+from uuid import uuid4
 
-from src.main import app
+import pytest
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import StaticPool
+from usipipo_commons.domain.entities.user import User
+
 from src.infrastructure.persistence.database import Base, get_db
 from src.infrastructure.persistence.repositories.user_repository import UserRepository
-from src.core.application.services.user_service import UserService
+from src.main import app
 from src.shared.security.jwt import create_jwt_token
-from usipipo_commons.domain.entities.user import User
-from uuid import uuid4
-from datetime import datetime, timezone
-
 
 # Test database URL (SQLite en memoria para tests)
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -47,7 +46,7 @@ async def test_engine():
 
 
 @pytest.fixture(scope="function")
-async def test_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
+async def test_session(test_engine) -> AsyncGenerator[AsyncSession]:
     """Crea una sesión de test."""
     async_session_maker = async_sessionmaker(
         test_engine,
@@ -60,7 +59,7 @@ async def test_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
 
 
 @pytest.fixture(scope="function")
-async def client(test_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
+async def client(test_session: AsyncSession) -> AsyncGenerator[AsyncClient]:
     """Crea un cliente de test."""
 
     async def override_get_db():
@@ -78,10 +77,10 @@ async def client(test_session: AsyncSession) -> AsyncGenerator[AsyncClient, None
 
 
 @pytest.fixture
-async def auth_headers(client: AsyncClient, test_session: AsyncSession) -> dict:
+async def auth_headers(_client: AsyncClient, test_session: AsyncSession) -> dict:
     """Crea headers de autenticación para tests."""
-    now = datetime.now(timezone.utc)
-    
+    now = datetime.now(UTC)
+
     # Crear usuario de test
     test_user = User(
         id=uuid4(),
@@ -108,10 +107,10 @@ async def auth_headers(client: AsyncClient, test_session: AsyncSession) -> dict:
 
 
 @pytest.fixture
-async def admin_auth_headers(client: AsyncClient, test_session: AsyncSession) -> dict:
+async def admin_auth_headers(_client: AsyncClient, test_session: AsyncSession) -> dict:
     """Crea headers de autenticación para admin."""
-    now = datetime.now(timezone.utc)
-    
+    now = datetime.now(UTC)
+
     # Crear usuario admin de test
     test_admin = User(
         id=uuid4(),

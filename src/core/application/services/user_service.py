@@ -2,13 +2,12 @@
 
 import uuid
 from datetime import datetime
-from typing import Optional
 
-from usipipo_commons.constants.plans import FREE_GB, REFERRAL_BONUS_GB
+from usipipo_commons.constants.plans import FREE_GB
 from usipipo_commons.domain.entities.user import User
 
-from src.core.domain.interfaces.i_user_repository import IUserRepository
 from src.core.application.exceptions import UserNotFoundError
+from src.core.domain.interfaces.i_user_repository import IUserRepository
 
 
 class UserService:
@@ -17,21 +16,21 @@ class UserService:
     def __init__(self, user_repo: IUserRepository):
         self.user_repo = user_repo
 
-    async def get_by_id(self, user_id: uuid.UUID) -> Optional[User]:
+    async def get_by_id(self, user_id: uuid.UUID) -> User | None:
         """Obtiene usuario por ID."""
         return await self.user_repo.get_by_id(user_id)
 
-    async def get_by_telegram_id(self, telegram_id: int) -> Optional[User]:
+    async def get_by_telegram_id(self, telegram_id: int) -> User | None:
         """Obtiene usuario por Telegram ID."""
         return await self.user_repo.get_by_telegram_id(telegram_id)
 
     async def get_or_create_by_telegram(
         self,
         telegram_id: int,
-        username: Optional[str] = None,
-        first_name: Optional[str] = None,
-        last_name: Optional[str] = None,
-        referral_code: Optional[str] = None,
+        username: str | None = None,
+        first_name: str | None = None,
+        last_name: str | None = None,
+        referral_code: str | None = None,
     ) -> User:
         """
         Obtiene usuario por Telegram ID o crea uno nuevo si no existe.
@@ -93,11 +92,11 @@ class UserService:
     async def create_user(
         self,
         telegram_id: int,
-        username: Optional[str] = None,
-        first_name: Optional[str] = None,
-        last_name: Optional[str] = None,
-        referral_code: Optional[str] = None,
-        referred_by: Optional[uuid.UUID] = None,
+        username: str | None = None,
+        first_name: str | None = None,
+        last_name: str | None = None,
+        referral_code: str | None = None,
+        referred_by: uuid.UUID | None = None,
     ) -> User:
         """
         Crea un nuevo usuario.
@@ -142,10 +141,10 @@ class UserService:
     async def update_user(
         self,
         user_id: uuid.UUID,
-        username: Optional[str] = None,
-        first_name: Optional[str] = None,
-        last_name: Optional[str] = None,
-        balance_gb: Optional[float] = None,
+        username: str | None = None,
+        first_name: str | None = None,
+        last_name: str | None = None,
+        balance_gb: float | None = None,
     ) -> User:
         """
         Actualiza información del usuario.

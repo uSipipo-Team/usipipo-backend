@@ -1,13 +1,12 @@
 """Dependencias para autenticación y autorización."""
 
-from typing import Optional
 from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from usipipo_commons.domain.entities.user import User
+
 from src.core.application.services.user_service import UserService
 from src.core.application.services.vpn_service import VpnService
 from src.infrastructure.persistence.database import get_db

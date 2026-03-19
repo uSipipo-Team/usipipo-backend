@@ -1,7 +1,7 @@
 """Schemas compartidos."""
 
-from .auth import TelegramAuthRequest, AuthResponse
-from .vpn import VpnKeyResponse, CreateVpnKeyRequest, UpdateVpnKeyRequest
+from .auth import AuthResponse, TelegramAuthRequest
+from .vpn import CreateVpnKeyRequest, UpdateVpnKeyRequest, VpnKeyResponse
 
 __all__ = [
     "TelegramAuthRequest",

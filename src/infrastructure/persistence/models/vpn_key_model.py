@@ -1,16 +1,16 @@
 """Modelo SQLAlchemy para claves VPN."""
 
 from datetime import datetime
-from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, Float, String, Text, Enum as SQLEnum
+from sqlalchemy import DateTime, Float, String, Text
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
-
 from usipipo_commons.domain.entities.vpn_key import VpnKey
-from usipipo_commons.domain.enums.vpn_type import VpnType
 from usipipo_commons.domain.enums.key_status import KeyStatus
+from usipipo_commons.domain.enums.vpn_type import VpnType
+
 from src.infrastructure.persistence.database import Base
 
 
@@ -22,22 +22,14 @@ class VpnKeyModel(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     user_id: Mapped[UUID] = mapped_column(nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    vpn_type: Mapped[VpnType] = mapped_column(
-        SQLEnum(VpnType, name="vpn_type"), nullable=False
-    )
+    vpn_type: Mapped[VpnType] = mapped_column(SQLEnum(VpnType, name="vpn_type"), nullable=False)
     status: Mapped[KeyStatus] = mapped_column(
         SQLEnum(KeyStatus, name="key_status"), default=KeyStatus.ACTIVE
     )
-    config: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
-    expires_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    last_used_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    config: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     data_used_gb: Mapped[float] = mapped_column(Float, default=0.0)
     data_limit_gb: Mapped[float] = mapped_column(Float, default=5.0)
 

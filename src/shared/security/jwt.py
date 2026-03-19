@@ -1,9 +1,9 @@
 """Seguridad JWT para autenticación."""
 
-import jwt
-from datetime import datetime, timedelta, timezone
-from typing import Optional
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
+
+import jwt
 
 from ...shared.config import settings
 
@@ -11,7 +11,7 @@ from ...shared.config import settings
 def create_jwt_token(
     user_id: UUID,
     telegram_id: int,
-    expires_delta: Optional[timedelta] = None,
+    expires_delta: timedelta | None = None,
 ) -> str:
     """
     Crea JWT token para usuario.
@@ -24,7 +24,7 @@ def create_jwt_token(
     Returns:
         str: JWT token encoded
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expire = now + (expires_delta or timedelta(hours=settings.JWT_EXPIRATION_HOURS))
 
     payload = {
@@ -59,9 +59,9 @@ def decode_jwt_token(token: str) -> dict:
         )
         return payload
     except jwt.ExpiredSignatureError:
-        raise ValueError("Token expired")
+        raise ValueError("Token expired") from None
     except jwt.InvalidTokenError:
-        raise ValueError("Invalid token")
+        raise ValueError("Invalid token") from None
 
 
 def verify_jwt_token(token: str) -> bool:
