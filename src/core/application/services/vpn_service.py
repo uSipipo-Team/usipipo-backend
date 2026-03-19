@@ -1,7 +1,7 @@
 """Servicios de aplicación para gestión de VPN."""
 
 import uuid
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 from usipipo_commons.constants.plans import MAX_KEYS_PER_USER
 from usipipo_commons.domain.entities.vpn_key import VpnKey
@@ -16,6 +16,8 @@ from src.core.application.exceptions import (
 )
 from src.core.domain.interfaces.i_user_repository import IUserRepository
 from src.core.domain.interfaces.i_vpn_repository import IVPNRepository
+from src.infrastructure.vpn_providers.outline_client import OutlineClient
+from src.infrastructure.vpn_providers.wireguard_client import WireGuardClient
 
 
 class VpnService:
@@ -25,9 +27,13 @@ class VpnService:
         self,
         user_repo: IUserRepository,
         vpn_repo: IVPNRepository,
+        outline_client: OutlineClient | None = None,
+        wireguard_client: WireGuardClient | None = None,
     ):
         self.user_repo = user_repo
         self.vpn_repo = vpn_repo
+        self.outline_client = outline_client
+        self.wireguard_client = wireguard_client
 
     async def create_key(
         self,
@@ -71,12 +77,23 @@ class VpnService:
         if len(active_keys) >= MAX_KEYS_PER_USER:
             raise VpnKeyLimitReachedError(f"User reached max keys ({MAX_KEYS_PER_USER})")
 
-        # Generar config según tipo de VPN
-        # NOTA: Esto se implementará cuando se conecte con los proveedores VPN
-        config = self._generate_placeholder_config(vpn_type_enum, name)
+        # Generar config según tipo de VPN usando clientes reales
+        if vpn_type_enum == VpnType.OUTLINE:
+            if not self.outline_client:
+                raise InvalidVpnTypeError("Outline client not configured")
+            outline_result = await self.outline_client.create_key(name=name)
+            config = outline_result["access_url"]
+        elif vpn_type_enum == VpnType.WIREGUARD:
+            if not self.wireguard_client:
+                raise InvalidVpnTypeError("WireGuard client not configured")
+            wg_result = await self.wireguard_client.create_peer(client_name=name)
+            config = wg_result["config"]
+        else:
+            raise InvalidVpnTypeError(f"Invalid VPN type: {vpn_type}")
 
         # Calcular fecha de expiración (30 días por defecto)
-        expires_at = datetime.utcnow() + timedelta(days=30)
+        now = datetime.now(UTC)
+        expires_at = now + timedelta(days=30)
 
         # Crear entidad
         vpn_key = VpnKey(
@@ -86,7 +103,7 @@ class VpnService:
             vpn_type=vpn_type_enum,
             status=KeyStatus.ACTIVE,
             config=config,
-            created_at=datetime.utcnow(),
+            created_at=now,
             expires_at=expires_at,
             last_used_at=None,
             data_used_gb=0.0,
@@ -143,8 +160,11 @@ class VpnService:
         if key.user_id != user_id:
             raise PermissionError("User does not own this key")
 
-        # Revocar en proveedor VPN (placeholder por ahora)
-        await self._revoke_from_provider(key)
+        # Revocar en proveedor VPN según tipo
+        if key.vpn_type == VpnType.OUTLINE and self.outline_client:
+            await self.outline_client.delete_key(key.external_id or "")
+        elif key.vpn_type == VpnType.WIREGUARD and self.wireguard_client:
+            await self.wireguard_client.delete_client(key.external_id or "")
 
         # Eliminar de BD
         return await self.vpn_repo.delete(key_id)
@@ -220,8 +240,11 @@ class VpnService:
         if key.user_id != user_id:
             raise PermissionError("User does not own this key")
 
-        # Revocar en proveedor VPN
-        await self._revoke_from_provider(key)
+        # Revocar en proveedor VPN según tipo
+        if key.vpn_type == VpnType.OUTLINE and self.outline_client:
+            await self.outline_client.delete_key(key.external_id or "")
+        elif key.vpn_type == VpnType.WIREGUARD and self.wireguard_client:
+            await self.wireguard_client.delete_client(key.external_id or "")
 
         # Actualizar estado
         updated_key = VpnKey(
@@ -239,39 +262,6 @@ class VpnService:
         )
 
         return await self.vpn_repo.update(updated_key)
-
-    def _generate_placeholder_config(self, vpn_type: VpnType, name: str) -> str:
-        """
-        Genera una configuración placeholder para la VPN.
-
-        NOTA: Esto se reemplazará cuando se implementen los clientes VPN reales.
-
-        Args:
-            vpn_type: Tipo de VPN
-            name: Nombre de la clave
-
-        Returns:
-            Configuración de VPN (string)
-        """
-        if vpn_type == VpnType.WIREGUARD:
-            return f"[WireGuard Placeholder Config for {name}]"
-        elif vpn_type == VpnType.OUTLINE:
-            return f"ss://outline-placeholder-config-for-{name}"
-        return ""
-
-    async def _revoke_from_provider(self, key: VpnKey) -> None:
-        """
-        Revoca la clave del proveedor VPN.
-
-        NOTA: Esto se implementará cuando se conecte con los proveedores VPN reales.
-
-        Args:
-            key: La clave VPN a revocar
-        """
-        # Placeholder para la revocación real
-        # WireGuard: await self.wireguard_client.revoke_key(key.config)
-        # Outline: await self.outline_client.revoke_key(key.id)
-        pass
 
     async def get_active_keys_count(self, user_id: uuid.UUID) -> int:
         """

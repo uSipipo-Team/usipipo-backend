@@ -34,6 +34,29 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://localhost:6379"
 
+    # VPN - Outline
+    OUTLINE_API_URL: str
+    OUTLINE_VERIFY_SSL: bool = False
+    OUTLINE_API_PORT: str = ""
+    OUTLINE_KEYS_PORT: str = ""
+    OUTLINE_SERVER_IP: str = ""
+    OUTLINE_DASHBOARD_URL: str = ""
+    OUTLINE_CERT_SHA256: str = ""
+
+    # VPN - WireGuard
+    WG_INTERFACE: str = "wg0"
+    WG_PATH: str = "/etc/wireguard"
+    WG_SERVER_PORT: int
+    SERVER_IP: str
+    WG_CLIENT_DNS_1: str = "1.1.1.1"
+    WG_CLIENT_DNS_2: str = "1.0.0.1"
+    WG_SERVER_IPV4: str = ""
+    WG_SERVER_IPV6: str = ""
+    WG_SERVER_PUBKEY: str = ""
+    WG_SERVER_PRIVKEY: str = ""
+    WG_ALLOWED_IPS: str = ""
+    WG_ENDPOINT: str = ""
+
     @property
     def is_development(self) -> bool:
         """Verifica si la aplicación está en modo desarrollo."""

@@ -62,3 +62,47 @@ async def test_create_vpn_key_invalid_type(client: AsyncClient, auth_headers: di
         headers=auth_headers,
     )
     assert response.status_code == 422  # Validation error
+
+
+@pytest.mark.asyncio
+async def test_list_vpn_keys_with_auth(client: AsyncClient, auth_headers: dict):
+    """Test de lista de claves VPN con autenticación (lista vacía)."""
+    response = await client.get(
+        "/api/v1/vpn/keys",
+        headers=auth_headers,
+    )
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+@pytest.mark.asyncio
+async def test_create_vpn_key_success(client: AsyncClient, auth_headers: dict):
+    """Test de creación exitosa de clave VPN."""
+    payload = {
+        "name": "My VPN",
+        "vpn_type": "wireguard",
+        "data_limit_gb": 5.0,
+    }
+    response = await client.post(
+        "/api/v1/vpn/keys",
+        json=payload,
+        headers=auth_headers,
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["name"] == "My VPN"
+    assert data["vpn_type"] == "wireguard"
+    assert "id" in data
+    assert "user_id" in data
+    assert "config" in data
+
+
+@pytest.mark.asyncio
+async def test_auth_telegram_invalid_data(client: AsyncClient):
+    """Test de autenticación con datos inválidos."""
+    response = await client.post(
+        "/api/v1/auth/telegram",
+        json={"init_data": "invalid_data"},
+    )
+    assert response.status_code == 401
+    assert "Invalid Telegram initData" in response.json()["detail"]

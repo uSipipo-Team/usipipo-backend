@@ -12,6 +12,8 @@ from src.core.application.services.vpn_service import VpnService
 from src.infrastructure.persistence.database import get_db
 from src.infrastructure.persistence.repositories.user_repository import UserRepository
 from src.infrastructure.persistence.repositories.vpn_repository import VpnRepository
+from src.infrastructure.vpn_providers.outline_client import OutlineClient
+from src.infrastructure.vpn_providers.wireguard_client import WireGuardClient
 from src.shared.security.jwt import decode_jwt_token
 
 security = HTTPBearer()
@@ -114,4 +116,6 @@ async def get_vpn_service(
     """
     user_repo = UserRepository(db)
     vpn_repo = VpnRepository(db)
-    return VpnService(user_repo, vpn_repo)
+    outline_client = OutlineClient()
+    wireguard_client = WireGuardClient()
+    return VpnService(user_repo, vpn_repo, outline_client, wireguard_client)

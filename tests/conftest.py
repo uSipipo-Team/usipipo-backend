@@ -13,10 +13,14 @@ from usipipo_commons.domain.entities.user import User
 from src.infrastructure.persistence.database import Base, get_db
 from src.infrastructure.persistence.repositories.user_repository import UserRepository
 from src.main import app
+from src.shared import config
 from src.shared.security.jwt import create_jwt_token
 
 # Test database URL (SQLite en memoria para tests)
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
+
+# Override JWT_SECRET para tests (mínimo 32 bytes para evitar warnings)
+config.settings.JWT_SECRET = "test-secret-key-must-be-at-least-32-bytes-long-for-security"
 
 
 @pytest.fixture(scope="session")
@@ -77,7 +81,7 @@ async def client(test_session: AsyncSession) -> AsyncGenerator[AsyncClient]:
 
 
 @pytest.fixture
-async def auth_headers(_client: AsyncClient, test_session: AsyncSession) -> dict:
+async def auth_headers(client: AsyncClient, test_session: AsyncSession) -> dict:
     """Crea headers de autenticación para tests."""
     now = datetime.now(UTC)
 
@@ -107,7 +111,7 @@ async def auth_headers(_client: AsyncClient, test_session: AsyncSession) -> dict
 
 
 @pytest.fixture
-async def admin_auth_headers(_client: AsyncClient, test_session: AsyncSession) -> dict:
+async def admin_auth_headers(client: AsyncClient, test_session: AsyncSession) -> dict:
     """Crea headers de autenticación para admin."""
     now = datetime.now(UTC)
 
