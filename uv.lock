@@ -1094,6 +1094,7 @@ dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
     { name = "fastapi" },
+    { name = "httpx" },
     { name = "pydantic-settings" },
     { name = "pyjwt" },
     { name = "python-jose", extra = ["cryptography"] },
@@ -1102,10 +1103,9 @@ dependencies = [
     { name = "uvicorn", extra = ["standard"] },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "bandit" },
-    { name = "httpx" },
     { name = "mypy" },
     { name = "pre-commit" },
     { name = "pytest" },
@@ -1119,34 +1119,33 @@ requires-dist = [
     { name = "aiosqlite", specifier = ">=0.20.0" },
     { name = "alembic", specifier = ">=1.13.0" },
     { name = "asyncpg", specifier = ">=0.29.0" },
-    { name = "bandit", marker = "extra == 'dev'", specifier = ">=1.7.0" },
     { name = "fastapi", specifier = ">=0.109.0" },
-    { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.27.0" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
-    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.6.0" },
+    { name = "httpx", specifier = ">=0.27.0" },
     { name = "pydantic-settings", specifier = ">=2.0.0" },
     { name = "pyjwt", specifier = ">=2.8.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23.0" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
     { name = "python-jose", extras = ["cryptography"], specifier = ">=3.3.0" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.0" },
-    { name = "usipipo-commons", specifier = ">=0.1.0" },
+    { name = "usipipo-commons", git = "https://github.com/uSipipo-Team/usipipo-commons.git?rev=v0.2.1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.27.0" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "bandit", specifier = ">=1.7.0" },
+    { name = "mypy", specifier = ">=1.0.0" },
+    { name = "pre-commit", specifier = ">=3.6.0" },
+    { name = "pytest", specifier = ">=8.0.0" },
+    { name = "pytest-asyncio", specifier = ">=0.23.0" },
+    { name = "pytest-cov", specifier = ">=4.0.0" },
+    { name = "ruff", specifier = ">=0.1.0" },
+]
 
 [[package]]
 name = "usipipo-commons"
-version = "0.1.0"
-source = { registry = "https://pypi.org/simple" }
+version = "0.2.0"
+source = { git = "https://github.com/uSipipo-Team/usipipo-commons.git?rev=v0.2.1#0c19112c2aed8d09997e775750bf0b4409aceb18" }
 dependencies = [
     { name = "pydantic" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/f0/e0/42037e6258a0dfc7b5c7faff2167377dd87a8860159be4fe6e23c5430d8f/usipipo_commons-0.1.0.tar.gz", hash = "sha256:16a7bf1064e6e90a49ccd52adc1be08abd00805dafc11dab05a7d6242b2fa579", size = 30267, upload-time = "2026-03-19T00:06:35.282Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/40/0a/b608ede979a3d9800b2da1d2a1c3bc8e5fb02cb6483cb94021d1e9d32473/usipipo_commons-0.1.0-py3-none-any.whl", hash = "sha256:5d90e84bebdb4a833422a0e0134a03fd25c1f4f4b786ab3269877dced856abf6", size = 11440, upload-time = "2026-03-19T00:06:36.545Z" },
 ]
 
 [[package]]
