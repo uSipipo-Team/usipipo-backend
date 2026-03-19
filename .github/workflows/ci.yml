@@ -76,13 +76,13 @@ jobs:
         run: |
           uv run pytest tests/unit/ -v --tb=short
         env:
-          DATABASE_URL: postgresql+asyncpg://usipipo:pass@localhost:5432/usipipo_test
+          DATABASE_URL: postgresql+asyncpg://postgres:pass@localhost:5432/usipipo_test
 
       - name: Run integration tests
         run: |
           uv run pytest tests/integration/ -v --tb=short
         env:
-          DATABASE_URL: postgresql+asyncpg://usipipo:pass@localhost:5432/usipipo_test
+          DATABASE_URL: postgresql+asyncpg://postgres:pass@localhost:5432/usipipo_test
           JWT_SECRET: test-secret-key-must-be-at-least-32-bytes-long-for-security
 
   type-check:
