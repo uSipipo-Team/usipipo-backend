@@ -2,6 +2,7 @@
 
 import pytest
 from httpx import AsyncClient
+from unittest.mock import AsyncMock, patch
 
 
 @pytest.mark.asyncio
@@ -67,10 +68,12 @@ async def test_create_vpn_key_invalid_type(client: AsyncClient, auth_headers: di
 @pytest.mark.asyncio
 async def test_list_vpn_keys_with_auth(client: AsyncClient, auth_headers: dict):
     """Test de lista de claves VPN con autenticación (lista vacía)."""
-    response = await client.get(
-        "/api/v1/vpn/keys",
-        headers=auth_headers,
-    )
+    with patch("src.infrastructure.api.v1.deps.OutlineClient"), \
+         patch("src.infrastructure.api.v1.deps.WireGuardClient"):
+        response = await client.get(
+            "/api/v1/vpn/keys",
+            headers=auth_headers,
+        )
     assert response.status_code == 200
     assert response.json() == []
 
@@ -83,11 +86,26 @@ async def test_create_vpn_key_success(client: AsyncClient, auth_headers: dict):
         "vpn_type": "wireguard",
         "data_limit_gb": 5.0,
     }
-    response = await client.post(
-        "/api/v1/vpn/keys",
-        json=payload,
-        headers=auth_headers,
-    )
+    
+    # Mock para evitar acceso a /etc/wireguard
+    mock_wg_client = AsyncMock()
+    mock_wg_client.create_peer.return_value = {
+        "id": "test-pub-key",
+        "name": "My VPN",
+        "client_name": "wg-test-123",
+        "ip": "10.0.0.2",
+        "config": "[Interface]\nPrivateKey = test\n[Peer]\nPublicKey = test",
+        "file_path": "/tmp/test.conf",
+    }
+    
+    with patch("src.infrastructure.api.v1.deps.OutlineClient"), \
+         patch("src.infrastructure.api.v1.deps.WireGuardClient", return_value=mock_wg_client):
+        response = await client.post(
+            "/api/v1/vpn/keys",
+            json=payload,
+            headers=auth_headers,
+        )
+    
     assert response.status_code == 201
     data = response.json()
     assert data["name"] == "My VPN"
