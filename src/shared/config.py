@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://localhost:6379"
 
+    # Payment - TronDealer
+    TRON_DEALER_API_KEY: str = ""
+    TRON_DEALER_WEBHOOK_SECRET: str = ""
+
     # VPN - Outline
     OUTLINE_API_URL: str = ""
     OUTLINE_VERIFY_SSL: bool = False

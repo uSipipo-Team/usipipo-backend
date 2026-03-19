@@ -4,6 +4,8 @@ from .domain_exceptions import (
     DomainException,
     InsufficientBalanceError,
     InvalidVpnTypeError,
+    PaymentAlreadyCompletedError,
+    PaymentExpiredError,
     PaymentNotFoundError,
     UserNotFoundError,
     VpnKeyLimitReachedError,
@@ -17,5 +19,7 @@ __all__ = [
     "VpnKeyLimitReachedError",
     "InvalidVpnTypeError",
     "PaymentNotFoundError",
+    "PaymentExpiredError",
+    "PaymentAlreadyCompletedError",
     "InsufficientBalanceError",
 ]

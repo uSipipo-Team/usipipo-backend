@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import StaticPool
 from usipipo_commons.domain.entities.user import User
 
-from src.infrastructure.persistence.database import Base, get_db
+from src.infrastructure.persistence.database import Base, get_db, get_session
 from src.infrastructure.persistence.repositories.user_repository import UserRepository
 from src.main import app
 from src.shared import config
@@ -69,7 +69,11 @@ async def client(test_session: AsyncSession) -> AsyncGenerator[AsyncClient]:
     async def override_get_db():
         yield test_session
 
+    async def override_get_session():
+        yield test_session
+
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_session] = override_get_session
 
     async with AsyncClient(
         transport=ASGITransport(app=app),
