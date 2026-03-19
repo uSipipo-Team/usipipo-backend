@@ -58,11 +58,15 @@ async def test_create_vpn_key_invalid_type(client: AsyncClient, auth_headers: di
         "vpn_type": "invalid_type",
         "data_limit_gb": 5.0,
     }
-    response = await client.post(
-        "/api/v1/vpn/keys",
-        json=payload,
-        headers=auth_headers,
-    )
+    with (
+        patch("src.infrastructure.api.v1.deps.OutlineClient"),
+        patch("src.infrastructure.api.v1.deps.WireGuardClient"),
+    ):
+        response = await client.post(
+            "/api/v1/vpn/keys",
+            json=payload,
+            headers=auth_headers,
+        )
     assert response.status_code == 422  # Validation error
 
 
