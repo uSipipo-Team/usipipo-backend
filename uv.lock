@@ -1125,7 +1125,7 @@ requires-dist = [
     { name = "pyjwt", specifier = ">=2.8.0" },
     { name = "python-jose", extras = ["cryptography"], specifier = ">=3.3.0" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.0" },
-    { name = "usipipo-commons", git = "https://github.com/uSipipo-Team/usipipo-commons.git?rev=v0.2.1" },
+    { name = "usipipo-commons", directory = "/home/mowgli/usipipo/usipipo-commons" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.27.0" },
 ]
 
@@ -1142,10 +1142,21 @@ dev = [
 
 [[package]]
 name = "usipipo-commons"
-version = "0.2.0"
-source = { git = "https://github.com/uSipipo-Team/usipipo-commons.git?rev=v0.2.1#0c19112c2aed8d09997e775750bf0b4409aceb18" }
+version = "0.4.1"
+source = { directory = "/home/mowgli/usipipo/usipipo-commons" }
 dependencies = [
     { name = "pydantic" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pydantic", specifier = ">=2.12.0" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mypy", specifier = ">=1.0.0" },
+    { name = "pytest", specifier = ">=8.0.0" },
+    { name = "pytest-cov", specifier = ">=4.0.0" },
+    { name = "ruff", specifier = ">=0.1.0" },
 ]
 
 [[package]]

@@ -1,6 +1,7 @@
 """Servicios de aplicación."""
 
+from .subscription_service import SubscriptionService
 from .user_service import UserService
 from .vpn_service import VpnService
 
-__all__ = ["UserService", "VpnService"]
+__all__ = ["UserService", "VpnService", "SubscriptionService"]
