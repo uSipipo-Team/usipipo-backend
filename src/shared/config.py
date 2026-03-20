@@ -61,6 +61,14 @@ class Settings(BaseSettings):
     WG_ALLOWED_IPS: str = ""
     WG_ENDPOINT: str = ""
 
+    # ==================================================================
+    # SISTEMA DE TARIFA POR CONSUMO (PAY-AS-YOU-GO)
+    # ==================================================================
+    CONSUMPTION_PRICE_PER_GB_USD: float = 0.25
+    CONSUMPTION_PRICE_PER_MB_USD: float = 0.000244140625  # 0.25 / 1024
+    CONSUMPTION_CYCLE_DAYS: int = 30
+    CONSUMPTION_INVOICE_EXPIRY_MINUTES: int = 30
+
     @property
     def is_development(self) -> bool:
         """Verifica si la aplicación está en modo desarrollo."""
