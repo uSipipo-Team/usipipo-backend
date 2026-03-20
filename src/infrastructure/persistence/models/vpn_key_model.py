@@ -1,15 +1,14 @@
 """Modelo SQLAlchemy para claves VPN."""
 
 from datetime import datetime
-from uuid import UUID, uuid4
+from uuid import uuid4
 
-from sqlalchemy import DateTime, Float, String, Text
+from sqlalchemy import DateTime, Integer, String, Text
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 from usipipo_commons.domain.entities.vpn_key import VpnKey
-from usipipo_commons.domain.enums.key_status import KeyStatus
-from usipipo_commons.domain.enums.vpn_type import VpnType
+from usipipo_commons.domain.enums.key_type import KeyType
 
 from src.infrastructure.persistence.database import Base
 
@@ -19,19 +18,21 @@ class VpnKeyModel(Base):
 
     __tablename__ = "vpn_keys"
 
-    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    user_id: Mapped[UUID] = mapped_column(nullable=False, index=True)
+    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid4()))
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)  # telegram_id
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    vpn_type: Mapped[VpnType] = mapped_column(SQLEnum(VpnType, name="vpn_type"), nullable=False)
-    status: Mapped[KeyStatus] = mapped_column(
-        SQLEnum(KeyStatus, name="key_status"), default=KeyStatus.ACTIVE
-    )
-    config: Mapped[str | None] = mapped_column(Text, nullable=True)
+    key_type: Mapped[KeyType] = mapped_column(SQLEnum(KeyType, name="key_type"), nullable=False)
+    key_data: Mapped[str | None] = mapped_column(Text, nullable=True)  # config
+    external_id: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
+    is_active: Mapped[bool] = mapped_column(default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    data_used_gb: Mapped[float] = mapped_column(Float, default=0.0)
-    data_limit_gb: Mapped[float] = mapped_column(Float, default=5.0)
+    last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    used_bytes: Mapped[int] = mapped_column(Integer, default=0)
+    data_limit_bytes: Mapped[int] = mapped_column(Integer, default=5 * 1024**3)
+    billing_reset_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime.now
+    )
 
     def to_entity(self) -> VpnKey:
         """
@@ -44,14 +45,16 @@ class VpnKeyModel(Base):
             id=self.id,
             user_id=self.user_id,
             name=self.name,
-            vpn_type=self.vpn_type,
-            status=self.status,
-            config=self.config,
+            key_type=self.key_type,
+            key_data=self.key_data,
+            external_id=self.external_id,
+            is_active=self.is_active,
             created_at=self.created_at,
             expires_at=self.expires_at,
-            last_used_at=self.last_used_at,
-            data_used_gb=self.data_used_gb,
-            data_limit_gb=self.data_limit_gb,
+            last_seen_at=self.last_seen_at,
+            used_bytes=self.used_bytes,
+            data_limit_bytes=self.data_limit_bytes,
+            billing_reset_at=self.billing_reset_at,
         )
 
     @classmethod
@@ -69,12 +72,14 @@ class VpnKeyModel(Base):
             id=entity.id,
             user_id=entity.user_id,
             name=entity.name,
-            vpn_type=entity.vpn_type,
-            status=entity.status,
-            config=entity.config,
+            key_type=entity.key_type,
+            key_data=entity.key_data,
+            external_id=entity.external_id,
+            is_active=entity.is_active,
             created_at=entity.created_at,
             expires_at=entity.expires_at,
-            last_used_at=entity.last_used_at,
-            data_used_gb=entity.data_used_gb,
-            data_limit_gb=entity.data_limit_gb,
+            last_seen_at=entity.last_seen_at,
+            used_bytes=entity.used_bytes,
+            data_limit_bytes=entity.data_limit_bytes,
+            billing_reset_at=entity.billing_reset_at,
         )
