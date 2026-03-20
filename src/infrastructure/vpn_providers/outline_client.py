@@ -152,7 +152,7 @@ class OutlineClient:
             key_id: ID de la clave
 
         Returns:
-            Dict con bytes_used
+            Dict con bytes_used, bytes_rx, bytes_tx
         """
         try:
             res = await self.client.get(f"{self.api_url}/metrics/transfer")
@@ -167,6 +167,43 @@ class OutlineClient:
             }
         except Exception:
             return {"bytes_used": 0, "bytes_rx": 0, "bytes_tx": 0}
+
+    async def disable_key(self, key_id: str) -> bool:
+        """
+        Deshabilita una clave estableciendo un límite de datos de 1 byte.
+
+        Args:
+            key_id: ID de la clave a deshabilitar
+
+        Returns:
+            True si se deshabilitó
+        """
+        try:
+            # Establecer data-limit a 1 byte efectivamente bloquea el tráfico
+            res = await self.client.put(
+                f"{self.api_url}/access-keys/{key_id}/data-limit",
+                json={"limit": 1},  # 1 byte = efectivamente bloqueado
+            )
+            return res.status_code == 201
+        except Exception:
+            return False
+
+    async def enable_key(self, key_id: str) -> bool:
+        """
+        Habilita una clave removiendo el límite de datos.
+
+        Args:
+            key_id: ID de la clave a habilitar
+
+        Returns:
+            True si se habilitó
+        """
+        try:
+            # Remover el data-limit establece la clave como ilimitada
+            res = await self.client.delete(f"{self.api_url}/access-keys/{key_id}/data-limit")
+            return res.status_code == 204
+        except Exception:
+            return False
 
     async def close(self) -> None:
         """Cierra el cliente HTTP."""

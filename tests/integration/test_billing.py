@@ -1,14 +1,13 @@
 """Integration tests for billing endpoints."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import uuid4
 
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from usipipo_commons.domain.entities.vpn_key import VpnKey
-from usipipo_commons.domain.enums.key_status import KeyStatus
-from usipipo_commons.domain.enums.vpn_type import VpnType
+from usipipo_commons.domain.enums.key_type import KeyType
 
 from src.infrastructure.persistence.repositories.vpn_repository import VpnRepository
 
@@ -49,17 +48,19 @@ async def test_get_key_usage_with_key(
     """Test getting key usage with existing key."""
     # Create a test VPN key
     test_key = VpnKey(
-        id=uuid4(),
-        user_id=uuid4(),  # This won't match the auth user, but we test the structure
+        id=str(uuid4()),
+        user_id=123456789,
         name="Test Key",
-        vpn_type=VpnType.WIREGUARD,
-        status=KeyStatus.ACTIVE,
-        config="config",
-        created_at=datetime.utcnow(),
+        key_type=KeyType.WIREGUARD,
+        key_data="config",
+        external_id="peer-123",
+        is_active=True,
+        created_at=datetime.now(UTC),
         expires_at=None,
-        last_used_at=None,
-        data_used_gb=1.5,
-        data_limit_gb=5.0,
+        last_seen_at=None,
+        used_bytes=int(1.5 * 1024**3),
+        data_limit_bytes=5 * 1024**3,
+        billing_reset_at=datetime.now(UTC),
     )
 
     vpn_repo = VpnRepository(test_session)
@@ -77,19 +78,20 @@ async def test_get_key_usage_not_authorized(
 ):
     """Test getting key usage for key not owned by user."""
     # Create a key with different user_id
-    different_user_id = uuid4()
     test_key = VpnKey(
-        id=uuid4(),
-        user_id=different_user_id,
+        id=str(uuid4()),
+        user_id=987654321,
         name="Other User Key",
-        vpn_type=VpnType.WIREGUARD,
-        status=KeyStatus.ACTIVE,
-        config="config",
-        created_at=datetime.utcnow(),
+        key_type=KeyType.WIREGUARD,
+        key_data="config",
+        external_id="peer-456",
+        is_active=True,
+        created_at=datetime.now(UTC),
         expires_at=None,
-        last_used_at=None,
-        data_used_gb=0.0,
-        data_limit_gb=5.0,
+        last_seen_at=None,
+        used_bytes=0,
+        data_limit_bytes=5 * 1024**3,
+        billing_reset_at=datetime.now(UTC),
     )
 
     vpn_repo = VpnRepository(test_session)

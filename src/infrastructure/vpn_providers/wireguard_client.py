@@ -407,3 +407,57 @@ PersistentKeepalive = 15
             return True
         except Exception:
             return False
+
+    async def enable_peer(self, client_name: str) -> bool:
+        """
+        Habilita un peer previamente deshabilitado.
+
+        Args:
+            client_name: Nombre del cliente
+
+        Returns:
+            True si se habilitó
+        """
+        try:
+            if not self.conf_path.exists():
+                return False
+
+            content = self.conf_path.read_text()
+
+            # Buscar el peer por client_name (puede estar deshabilitado)
+            pk_pattern = rf"### CLIENT {re.escape(client_name)}.*?PublicKey\s*=\s*([^\n]+)"
+            match = re.search(pk_pattern, content, flags=re.DOTALL)
+
+            if not match:
+                return False
+
+            pub_key = match.group(1).strip()
+
+            # Leer la IP permitida original desde el archivo del cliente
+            client_file = self.clients_dir / f"{self.interface}-{client_name}.conf"
+            if not client_file.exists():
+                return False
+
+            client_content = client_file.read_text()
+            ip_match = re.search(r"Address\s*=\s*([\d.]+)", client_content)
+
+            if not ip_match:
+                return False
+
+            client_ip = ip_match.group(1)
+
+            # Restaurar AllowedIPs original
+            await self._run_cmd(
+                f"wg set {self.interface} peer {pub_key} allowed-ips {client_ip}/32"
+            )
+
+            # Remover marca [DISABLED] del comentario
+            new_content = content.replace(
+                f"### CLIENT {client_name} [DISABLED]",
+                f"### CLIENT {client_name}",
+            )
+            self.conf_path.write_text(new_content)
+
+            return True
+        except Exception:
+            return False
