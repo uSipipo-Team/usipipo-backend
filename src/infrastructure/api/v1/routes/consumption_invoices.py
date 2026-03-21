@@ -374,6 +374,12 @@ async def mark_invoice_as_paid(
     # Recargar la factura actualizada
     updated_invoice = await repo.get_by_id(invoice_id, current_user.telegram_id)
 
+    if not updated_invoice:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Invoice not found",
+        )
+
     return ConsumptionInvoiceResponse(
         id=updated_invoice.id,
         billing_id=updated_invoice.billing_id,
@@ -445,6 +451,12 @@ async def mark_invoice_as_expired(
 
     # Recargar la factura actualizada
     updated_invoice = await repo.get_by_id(invoice_id, current_user.telegram_id)
+
+    if not updated_invoice:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Invoice not found",
+        )
 
     return ConsumptionInvoiceResponse(
         id=updated_invoice.id,
@@ -521,6 +533,12 @@ async def update_invoice_status(
 
     # Recargar la factura actualizada
     updated_invoice = await repo.get_by_id(invoice_id, current_user.telegram_id)
+
+    if not updated_invoice:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Invoice not found",
+        )
 
     return ConsumptionInvoiceResponse(
         id=updated_invoice.id,
