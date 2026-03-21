@@ -16,6 +16,12 @@ class PaymentRepository(IPaymentRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    async def get_all(self) -> list[Payment]:
+        """Gets all payments."""
+        result = await self.session.execute(select(PaymentModel))
+        models = result.scalars().all()
+        return [model.to_entity() for model in models]
+
     async def get_by_id(self, payment_id: UUID) -> Payment | None:
         """Gets payment by ID."""
         result = await self.session.execute(

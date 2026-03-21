@@ -16,6 +16,17 @@ class VpnRepository(IVPNRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    async def get_all(self) -> list[VpnKey]:
+        """
+        Obtiene todas las claves VPN.
+
+        Returns:
+            Lista de todas las claves VPN
+        """
+        result = await self.session.execute(select(VpnKeyModel))
+        models = result.scalars().all()
+        return [model.to_entity() for model in models]
+
     async def get_by_id(self, key_id: UUID) -> VpnKey | None:
         """
         Obtiene clave VPN por ID.
