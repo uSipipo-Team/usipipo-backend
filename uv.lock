@@ -1125,7 +1125,7 @@ requires-dist = [
     { name = "pyjwt", specifier = ">=2.8.0" },
     { name = "python-jose", extras = ["cryptography"], specifier = ">=3.3.0" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.0" },
-    { name = "usipipo-commons", directory = "/home/mowgli/usipipo/usipipo-commons" },
+    { name = "usipipo-commons", specifier = ">=0.5.6" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.27.0" },
 ]
 
@@ -1143,20 +1143,13 @@ dev = [
 [[package]]
 name = "usipipo-commons"
 version = "0.5.6"
-source = { directory = "/home/mowgli/usipipo/usipipo-commons" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
 ]
-
-[package.metadata]
-requires-dist = [{ name = "pydantic", specifier = ">=2.12.0" }]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "mypy", specifier = ">=1.0.0" },
-    { name = "pytest", specifier = ">=8.0.0" },
-    { name = "pytest-cov", specifier = ">=4.0.0" },
-    { name = "ruff", specifier = ">=0.1.0" },
+sdist = { url = "https://files.pythonhosted.org/packages/d7/1e/1de78ecb987cde5b5d5da053f001310c1db6f657b8b11f17b8f0d5eac526/usipipo_commons-0.5.6.tar.gz", hash = "sha256:4ec970ebf8cd75201d55e51be565094ba011ccc7564c93837e8ead867241f856", size = 50552, upload-time = "2026-03-21T11:54:53.051Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7c/ef/c8f44eda8b6ebbd2669e675c45295e331c5ca892ab24cbbadb0693c02920/usipipo_commons-0.5.6-py3-none-any.whl", hash = "sha256:5a3865ce264c01a902c51feb5a13f62029ac4cdf7608cd0a5295f9795eda4e48", size = 26440, upload-time = "2026-03-21T11:54:53.817Z" },
 ]
 
 [[package]]
