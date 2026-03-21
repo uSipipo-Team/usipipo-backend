@@ -47,7 +47,7 @@ class WebhookTokenRepository(IWebhookTokenRepository):
             .values(used_at=datetime.now(UTC))
         )
         await self.session.commit()
-        return result.rowcount > 0
+        return result.rowcount > 0 if result.rowcount else False
 
     async def cleanup_expired(self) -> int:
         """Limpia tokens expirados."""
@@ -59,4 +59,4 @@ class WebhookTokenRepository(IWebhookTokenRepository):
             .where(WebhookTokenModel.used_at.is_(None))
         )
         await self.session.commit()
-        return result.rowcount
+        return result.rowcount if result.rowcount else 0
