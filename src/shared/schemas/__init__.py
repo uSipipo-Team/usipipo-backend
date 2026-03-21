@@ -25,6 +25,15 @@ from .consumption_invoice import (
     ConsumptionInvoiceStatusUpdateRequest,
 )
 from .vpn import CreateVpnKeyRequest, UpdateVpnKeyRequest, VpnKeyResponse
+from .wallet import (
+    WalletCreateRequest,
+    WalletDepositRequest,
+    WalletPoolResponse,
+    WalletPoolStats,
+    WalletResponse,
+    WalletUpdateRequest,
+    WalletWithdrawRequest,
+)
 
 __all__ = [
     "TelegramAuthRequest",
@@ -39,6 +48,14 @@ __all__ = [
     "ConsumptionInvoicePaymentRequest",
     "ConsumptionInvoiceStatusUpdateRequest",
     "ConsumptionInvoiceListResponse",
+    # Wallet schemas
+    "WalletResponse",
+    "WalletCreateRequest",
+    "WalletUpdateRequest",
+    "WalletDepositRequest",
+    "WalletWithdrawRequest",
+    "WalletPoolResponse",
+    "WalletPoolStats",
     # Admin schemas
     "AdminUserInfoResponse",
     "AdminUserListResponse",

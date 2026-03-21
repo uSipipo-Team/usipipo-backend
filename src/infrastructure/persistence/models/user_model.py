@@ -1,7 +1,7 @@
 """Modelo SQLAlchemy para usuarios."""
 
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import BigInteger, Boolean, DateTime, Float, String
@@ -13,6 +13,7 @@ from src.infrastructure.persistence.database import Base
 
 if TYPE_CHECKING:
     from src.infrastructure.persistence.models.ticket_model import TicketModel
+    from src.infrastructure.persistence.models.wallet_model import WalletModel
 
 
 class UserModel(Base):
@@ -44,6 +45,7 @@ class UserModel(Base):
     tickets: Mapped[list["TicketModel"]] = relationship(
         back_populates="user", foreign_keys="TicketModel.user_id"
     )
+    wallet: Mapped[Optional["WalletModel"]] = relationship(back_populates="user", uselist=False)
 
     def to_entity(self) -> User:
         """

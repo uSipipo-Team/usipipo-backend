@@ -13,7 +13,13 @@ from src.core.application.services.subscription_service import SubscriptionServi
 from src.core.application.services.ticket_service import TicketService
 from src.core.application.services.user_service import UserService
 from src.core.application.services.vpn_service import VpnService
+from src.core.application.services.wallet_management_service import WalletManagementService
+from src.core.application.services.wallet_pool_service import WalletPoolService
+from src.infrastructure.api_clients.client_tron_dealer import TronDealerClient
 from src.infrastructure.persistence.database import get_db
+from src.infrastructure.persistence.repositories.crypto_order_repository import (
+    CryptoOrderRepository,
+)
 from src.infrastructure.persistence.repositories.data_package_repository import (
     DataPackageRepository,
 )
@@ -24,6 +30,8 @@ from src.infrastructure.persistence.repositories.subscription_repository import 
 from src.infrastructure.persistence.repositories.ticket_repository import TicketRepository
 from src.infrastructure.persistence.repositories.user_repository import UserRepository
 from src.infrastructure.persistence.repositories.vpn_repository import VpnRepository
+from src.infrastructure.persistence.repositories.wallet_pool_repository import WalletPoolRepository
+from src.infrastructure.persistence.repositories.wallet_repository import WalletRepository
 from src.infrastructure.vpn_providers.outline_client import OutlineClient
 from src.infrastructure.vpn_providers.wireguard_client import WireGuardClient
 from src.shared.security.jwt import decode_jwt_token
@@ -198,3 +206,39 @@ async def get_referral_service(
     user_repo = UserRepository(db)
     referral_repo = ReferralRepository(db)
     return ReferralService(user_repo, referral_repo)
+
+
+async def get_wallet_management_service(
+    db: AsyncSession = Depends(get_db),
+) -> WalletManagementService:
+    """
+    Dependency para obtener WalletManagementService.
+
+    Args:
+        db: Sesión de base de datos
+
+    Returns:
+        WalletManagementService: Servicio de gestión de wallets
+    """
+    wallet_repo = WalletRepository(db)
+    user_repo = UserRepository(db)
+    tron_dealer = TronDealerClient()
+    return WalletManagementService(tron_dealer, wallet_repo, user_repo)
+
+
+async def get_wallet_pool_service(
+    db: AsyncSession = Depends(get_db),
+) -> WalletPoolService:
+    """
+    Dependency para obtener WalletPoolService.
+
+    Args:
+        db: Sesión de base de datos
+
+    Returns:
+        WalletPoolService: Servicio de pool de wallets
+    """
+    wallet_pool_repo = WalletPoolRepository(db)
+    crypto_order_repo = CryptoOrderRepository(db)
+    tron_dealer = TronDealerClient()
+    return WalletPoolService(tron_dealer, wallet_pool_repo, crypto_order_repo)

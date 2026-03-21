@@ -8,6 +8,8 @@ from .subscription_repository import SubscriptionRepository
 from .subscription_transaction_repository import SubscriptionTransactionRepository
 from .user_repository import UserRepository
 from .vpn_key_repository import VpnKeyRepository
+from .wallet_pool_repository import WalletPoolRepository
+from .wallet_repository import WalletRepository
 from .webhook_token_repository import WebhookTokenRepository
 
 __all__ = [
@@ -20,4 +22,6 @@ __all__ = [
     "SubscriptionRepository",
     "SubscriptionTransactionRepository",
     "ConsumptionInvoiceRepository",
+    "WalletRepository",
+    "WalletPoolRepository",
 ]
