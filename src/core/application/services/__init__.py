@@ -8,6 +8,7 @@ from .consumption_billing_dtos import (
     ConsumptionSummary,
 )
 from .consumption_billing_service import ConsumptionBillingService
+from .consumption_invoice_service import ConsumptionInvoiceService
 from .subscription_payment_service import SubscriptionPaymentService
 from .subscription_service import SubscriptionService
 from .user_service import UserService
@@ -21,6 +22,7 @@ __all__ = [
     "ConsumptionBillingService",
     "ConsumptionActivationService",
     "ConsumptionCycleService",
+    "ConsumptionInvoiceService",
     "ConsumptionSummary",
     "ActivationResult",
     "CancellationResult",

@@ -21,6 +21,9 @@ from usipipo_commons.domain.entities.consumption_billing import ConsumptionBilli
 from src.core.domain.interfaces.i_consumption_billing_repository import (
     IConsumptionBillingRepository,
 )
+from src.core.domain.interfaces.i_consumption_invoice_repository import (
+    IConsumptionInvoiceRepository,
+)
 from src.core.domain.interfaces.i_user_repository import IUserRepository
 from src.shared.config import settings
 
@@ -45,15 +48,19 @@ class ConsumptionBillingService:
         billing_repo: IConsumptionBillingRepository,
         user_repo: IUserRepository,
         subscription_service: SubscriptionService | None = None,
+        invoice_repo: IConsumptionInvoiceRepository | None = None,
     ):
         self.billing_repo = billing_repo
         self.user_repo = user_repo
         self.subscription_service = subscription_service
+        self.invoice_repo = invoice_repo
         self.price_per_mb = Decimal(str(settings.CONSUMPTION_PRICE_PER_MB_USD))
         self.cycle_days = settings.CONSUMPTION_CYCLE_DAYS
 
         self._activation = ConsumptionActivationService(billing_repo, user_repo, self.price_per_mb)
-        self._cycle = ConsumptionCycleService(billing_repo, user_repo, self.cycle_days)
+        self._cycle = ConsumptionCycleService(
+            billing_repo, user_repo, self.cycle_days, invoice_repo
+        )
 
     # ============================================
     # DELEGACIÓN A ConsumptionActivationService
