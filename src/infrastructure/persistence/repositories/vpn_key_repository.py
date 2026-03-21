@@ -6,7 +6,6 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from usipipo_commons.domain.entities.vpn_key import VpnKey
-from usipipo_commons.domain.enums.key_status import KeyStatus
 
 from src.core.domain.interfaces.i_vpn_key_repository import IVpnKeyRepository
 from src.infrastructure.persistence.models.vpn_key_model import VpnKeyModel
@@ -65,8 +64,8 @@ class VpnKeyRepository(IVpnKeyRepository):
         result = await self.session.execute(select(VpnKeyModel).where(VpnKeyModel.id == key_id))
         model = result.scalar_one_or_none()
         if model:
-            model.data_used_gb = data_used_gb
-            model.last_used_at = datetime.now(UTC)
+            model.used_bytes = int(data_used_gb * 1024**3)  # Convert GB to bytes
+            model.last_seen_at = datetime.now(UTC)
             await self.session.commit()
             return True
         return False
@@ -76,7 +75,7 @@ class VpnKeyRepository(IVpnKeyRepository):
         result = await self.session.execute(select(VpnKeyModel).where(VpnKeyModel.id == key_id))
         model = result.scalar_one_or_none()
         if model:
-            model.data_used_gb = 0.0
+            model.used_bytes = 0
             model.billing_reset_at = datetime.now(UTC)
             await self.session.commit()
             return True
@@ -87,7 +86,7 @@ class VpnKeyRepository(IVpnKeyRepository):
         result = await self.session.execute(select(VpnKeyModel).where(VpnKeyModel.id == key_id))
         model = result.scalar_one_or_none()
         if model:
-            model.data_limit_gb = data_limit_gb
+            model.data_limit_bytes = int(data_limit_gb * 1024**3)  # Convert GB to bytes
             await self.session.commit()
             return True
         return False
@@ -98,7 +97,7 @@ class VpnKeyRepository(IVpnKeyRepository):
         result = await self.session.execute(
             select(VpnKeyModel).where(
                 VpnKeyModel.billing_reset_at < now,
-                VpnKeyModel.status == KeyStatus.ACTIVE.value,
+                VpnKeyModel.is_active,
             )
         )
         models = result.scalars().all()
@@ -106,9 +105,7 @@ class VpnKeyRepository(IVpnKeyRepository):
 
     async def get_all_active(self) -> list[VpnKey]:
         """Gets all active VPN keys in the system."""
-        result = await self.session.execute(
-            select(VpnKeyModel).where(VpnKeyModel.status == KeyStatus.ACTIVE.value)
-        )
+        result = await self.session.execute(select(VpnKeyModel).where(VpnKeyModel.is_active))
         models = result.scalars().all()
         return [model.to_entity() for model in models]
 

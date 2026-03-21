@@ -3,16 +3,22 @@
 import uuid
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from sqlalchemy import BigInteger, DateTime, ForeignKey, Numeric, String
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from usipipo_commons.domain.entities.consumption_invoice import ConsumptionInvoice
 from usipipo_commons.domain.enums.consumption_payment_method import ConsumptionPaymentMethod
 from usipipo_commons.domain.enums.invoice_status import InvoiceStatus
 
 from src.infrastructure.persistence.database import Base
+
+if TYPE_CHECKING:
+    from src.infrastructure.persistence.models.consumption_billing_model import (
+        ConsumptionBillingModel,
+    )
 
 
 class ConsumptionInvoiceModel(Base):
@@ -54,6 +60,12 @@ class ConsumptionInvoiceModel(Base):
     telegram_payment_id: Mapped[str | None] = mapped_column(String(100), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
+
+    # Relationships
+    billing: Mapped["ConsumptionBillingModel"] = relationship(
+        back_populates="invoices",
+        foreign_keys=[billing_id],
     )
 
     @classmethod

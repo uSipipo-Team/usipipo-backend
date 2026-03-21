@@ -70,7 +70,8 @@ class CryptoOrderRepository(ICryptoOrderRepository):
             )
         )
         await self.session.commit()
-        return result.rowcount > 0
+        rowcount = result.rowcount or 0  # type: ignore[attr-defined]
+        return rowcount > 0
 
     async def mark_failed(self, order_id: UUID) -> bool:
         """Marca una orden como fallida."""
@@ -80,7 +81,8 @@ class CryptoOrderRepository(ICryptoOrderRepository):
             .values(status=CryptoOrderStatus.FAILED)
         )
         await self.session.commit()
-        return result.rowcount > 0
+        rowcount = result.rowcount or 0  # type: ignore[attr-defined]
+        return rowcount > 0
 
     async def mark_expired(self, order_id: UUID) -> bool:
         """Marca una orden como expirada."""
@@ -90,7 +92,8 @@ class CryptoOrderRepository(ICryptoOrderRepository):
             .values(status=CryptoOrderStatus.EXPIRED)
         )
         await self.session.commit()
-        return result.rowcount > 0
+        rowcount = result.rowcount or 0  # type: ignore[attr-defined]
+        return rowcount > 0
 
     async def cleanup_expired(self) -> int:
         """Limpia órdenes expiradas."""
@@ -103,4 +106,4 @@ class CryptoOrderRepository(ICryptoOrderRepository):
             .values(status=CryptoOrderStatus.EXPIRED)
         )
         await self.session.commit()
-        return result.rowcount
+        return result.rowcount or 0  # type: ignore[attr-defined]

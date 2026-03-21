@@ -59,24 +59,25 @@ async def tron_dealer_webhook(
             PaymentRepository,
         )
 
-        db = get_db()
-        payment_repo = PaymentRepository(db)
-        user_repo = UserRepository(db)
-        payment_service = PaymentService(payment_repo, user_repo)
-        notification_service = NotificationService(user_repo)
+        async for db in get_db():
+            payment_repo = PaymentRepository(db)
+            user_repo = UserRepository(db)
+            payment_service = PaymentService(payment_repo, user_repo)
+            notification_service = NotificationService(user_repo)
 
-        await payment_service.complete_payment(
-            payment_id=payment_id,
-            transaction_hash=transaction_hash,
-        )
+            await payment_service.complete_payment(
+                payment_id=payment_id,
+                transaction_hash=transaction_hash,
+            )
 
-        await notification_service.notify_payment_completed(
-            user_id=payment_id,
-            amount_usd=amount_usd,
-            gb_purchased=data.get("gb_purchased", 0),
-        )
+            await notification_service.notify_payment_completed(
+                user_id=payment_id,
+                amount_usd=amount_usd,
+                gb_purchased=data.get("gb_purchased", 0),
+            )
 
-        await notification_service.close()
+            await notification_service.close()
+            break
 
     except Exception as e:
         logger.error(f"Failed to complete payment {payment_id}: {e}")
