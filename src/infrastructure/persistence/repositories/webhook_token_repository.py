@@ -47,7 +47,7 @@ class WebhookTokenRepository(IWebhookTokenRepository):
             .values(used_at=datetime.now(UTC))
         )
         await self.session.commit()
-        rowcount = result.rowcount or 0
+        rowcount = result.rowcount or 0  # type: ignore[attr-defined]
         return rowcount > 0
 
     async def cleanup_expired(self) -> int:
@@ -60,4 +60,4 @@ class WebhookTokenRepository(IWebhookTokenRepository):
             .where(WebhookTokenModel.used_at.is_(None))
         )
         await self.session.commit()
-        return result.rowcount or 0
+        return result.rowcount or 0  # type: ignore[attr-defined]
