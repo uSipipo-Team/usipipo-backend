@@ -1,0 +1,65 @@
+import uuid
+from typing import Protocol
+
+from usipipo_commons.domain.entities import DataPackage
+
+
+class IDataPackageRepository(Protocol):
+    """
+    Contrato para la persistencia de paquetes de datos.
+    Define cómo interactuamos con la tabla de paquetes en la BD.
+    """
+
+    async def save(self, data_package: DataPackage, current_user_id: int) -> DataPackage:
+        """Guarda un nuevo paquete de datos o actualiza uno existente."""
+        ...
+
+    async def get_by_id(self, package_id: uuid.UUID, current_user_id: int) -> DataPackage | None:
+        """Busca un paquete específico por su ID."""
+        ...
+
+    async def get_by_user(self, telegram_id: int, current_user_id: int) -> list[DataPackage]:
+        """Recupera todos los paquetes de un usuario."""
+        ...
+
+    async def get_active_by_user(self, telegram_id: int, current_user_id: int) -> list[DataPackage]:
+        """Recupera solo los paquetes activos de un usuario."""
+        ...
+
+    async def get_valid_by_user(self, telegram_id: int, current_user_id: int) -> list[DataPackage]:
+        """Recupera los paquetes activos y no expirados de un usuario."""
+        ...
+
+    async def update_usage(
+        self, package_id: uuid.UUID, bytes_used: int, current_user_id: int
+    ) -> bool:
+        """Actualiza el uso de datos de un paquete."""
+        ...
+
+    async def deactivate(self, package_id: uuid.UUID, current_user_id: int) -> bool:
+        """Desactiva un paquete."""
+        ...
+
+    async def delete(self, package_id: uuid.UUID, current_user_id: int) -> bool:
+        """Elimina un paquete de la base de datos."""
+        ...
+
+    async def get_expired_packages(self, current_user_id: int) -> list[DataPackage]:
+        """Recupera todos los paquetes activos que han expirado."""
+        ...
+
+    async def get_by_telegram_payment_id(
+        self, telegram_payment_id: str, current_user_id: int
+    ) -> DataPackage | None:
+        """Busca un paquete por el ID de pago de Telegram."""
+        ...
+
+    async def get_by_user_paginated(
+        self, user_id: int, limit: int = 10, offset: int = 0, current_user_id: int = 0
+    ) -> list[DataPackage]:
+        """Get packages for a user with pagination."""
+        ...
+
+    async def count_by_user(self, user_id: int, current_user_id: int = 0) -> int:
+        """Count total packages for a user."""
+        ...
