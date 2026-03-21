@@ -73,7 +73,7 @@ class TestTicketService:
     @pytest.mark.asyncio
     async def test_get_user_tickets(self, ticket_service: TicketService, test_ticket: Ticket):
         """Prueba obtener tickets de usuario."""
-        ticket2 = await ticket_service.create_ticket(
+        await ticket_service.create_ticket(
             user_id=123456,
             category=TicketCategory.OTHER,
             subject="Another ticket",
