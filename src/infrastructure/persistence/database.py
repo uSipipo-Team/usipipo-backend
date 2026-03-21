@@ -29,11 +29,11 @@ async_session_maker = async_sessionmaker(
 )
 
 
-async def get_session() -> AsyncSession:
+async def get_session() -> AsyncGenerator[AsyncSession]:
     """
     Dependency para obtener sesión de base de datos (synchronous).
 
-    Returns:
+    Yields:
         AsyncSession: Sesión asíncrona de SQLAlchemy
     """
     async with async_session_maker() as session:
