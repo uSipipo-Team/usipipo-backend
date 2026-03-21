@@ -69,3 +69,27 @@ class PaymentAlreadyCompletedError(DomainException):
     def __init__(self, message: str = "Payment already completed"):
         self.message = message
         super().__init__(self.message)
+
+
+class SubscriptionAlreadyActiveError(DomainException):
+    """Excepción cuando un usuario ya tiene una suscripción activa."""
+
+    def __init__(self, message: str = "Subscription already active"):
+        self.message = message
+        super().__init__(self.message)
+
+
+class InvalidPlanTypeError(DomainException):
+    """Excepción cuando se proporciona un tipo de plan inválido."""
+
+    def __init__(self, message: str = "Invalid plan type"):
+        self.message = message
+        super().__init__(self.message)
+
+
+class SubscriptionNotFoundError(DomainException):
+    """Excepción cuando no se encuentra una suscripción."""
+
+    def __init__(self, message: str = "Subscription not found"):
+        self.message = message
+        super().__init__(self.message)

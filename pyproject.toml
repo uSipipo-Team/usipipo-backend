@@ -7,7 +7,7 @@ license = {text = "MIT"}
 authors = [{name = "uSipipo Team", email = "usipipo@gamil.com"}]
 
 dependencies = [
-    "usipipo-commons>=0.4.1",
+    "usipipo-commons @ file:///home/mowgli/usipipo/usipipo-commons",
     "fastapi>=0.109.0",
     "uvicorn[standard]>=0.27.0",
     "pydantic-settings>=2.0.0",
@@ -34,6 +34,9 @@ dev = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.ruff]
 line-length = 100
