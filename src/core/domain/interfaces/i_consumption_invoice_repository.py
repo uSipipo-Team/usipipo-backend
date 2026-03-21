@@ -1,7 +1,8 @@
 import uuid
-from typing import List, Optional, Protocol
+from typing import Protocol
 
-from domain.entities.consumption_invoice import ConsumptionInvoice, InvoiceStatus
+from usipipo_commons.domain.entities.consumption_invoice import ConsumptionInvoice
+from usipipo_commons.domain.enums.invoice_status import InvoiceStatus
 
 
 class IConsumptionInvoiceRepository(Protocol):
@@ -16,23 +17,23 @@ class IConsumptionInvoiceRepository(Protocol):
 
     async def get_by_id(
         self, invoice_id: uuid.UUID, current_user_id: int
-    ) -> Optional[ConsumptionInvoice]:
+    ) -> ConsumptionInvoice | None:
         """Busca una factura específica por su ID."""
         ...
 
     async def get_by_billing(
         self, billing_id: uuid.UUID, current_user_id: int
-    ) -> List[ConsumptionInvoice]:
+    ) -> list[ConsumptionInvoice]:
         """Recupera todas las facturas asociadas a un ciclo de facturación."""
         ...
 
-    async def get_by_user(self, user_id: int, current_user_id: int) -> List[ConsumptionInvoice]:
+    async def get_by_user(self, user_id: int, current_user_id: int) -> list[ConsumptionInvoice]:
         """Recupera todas las facturas de un usuario."""
         ...
 
     async def get_pending_by_user(
         self, user_id: int, current_user_id: int
-    ) -> Optional[ConsumptionInvoice]:
+    ) -> ConsumptionInvoice | None:
         """
         Recupera la factura pendiente de un usuario.
         Solo puede haber una factura pendiente activa por usuario.
@@ -41,11 +42,11 @@ class IConsumptionInvoiceRepository(Protocol):
 
     async def get_by_status(
         self, status: InvoiceStatus, current_user_id: int
-    ) -> List[ConsumptionInvoice]:
+    ) -> list[ConsumptionInvoice]:
         """Recupera todas las facturas con un estado específico."""
         ...
 
-    async def get_expired_pending(self, current_user_id: int) -> List[ConsumptionInvoice]:
+    async def get_expired_pending(self, current_user_id: int) -> list[ConsumptionInvoice]:
         """
         Recupera facturas pendientes que han expirado.
         Útil para limpieza periódica.

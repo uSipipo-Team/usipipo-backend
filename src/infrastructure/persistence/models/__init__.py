@@ -2,6 +2,7 @@
 
 from src.infrastructure.persistence.database import Base
 
+from .consumption_invoice_model import ConsumptionInvoiceModel
 from .crypto_order_model import CryptoOrderModel
 from .crypto_transaction_model import CryptoTransactionModel
 from .payment_model import PaymentModel
@@ -21,4 +22,5 @@ __all__ = [
     "WebhookTokenModel",
     "SubscriptionPlanModel",
     "SubscriptionTransactionModel",
+    "ConsumptionInvoiceModel",
 ]
