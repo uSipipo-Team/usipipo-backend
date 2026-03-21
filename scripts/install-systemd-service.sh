@@ -21,6 +21,7 @@ ENV_TEMPLATE="deploy/.env.template"
 BACKEND_USER="usipipo"
 BACKEND_GROUP="usipipo"
 BACKEND_DIR="/home/usipipo/usipipo-backend"
+PYTHON_VERSION="3.13"
 
 echo -e "${GREEN}==================================${NC}"
 echo -e "${GREEN}uSipipo Backend - Systemd Setup${NC}"
@@ -54,32 +55,54 @@ else
 fi
 
 echo -e "${YELLOW}Step 2: Setting directory permissions...${NC}"
-mkdir -p $BACKEND_DIR/logs
+mkdir -p $BACKEND_DIR/logs $BACKEND_DIR/temp $BACKEND_DIR/static
 chown -R $BACKEND_USER:$BACKEND_GROUP $BACKEND_DIR
 chmod 755 $BACKEND_DIR
-chmod 755 $BACKEND_DIR/logs
+chmod 755 $BACKEND_DIR/logs $BACKEND_DIR/temp $BACKEND_DIR/static
 echo -e "${GREEN}✓ Directory permissions set${NC}"
 
-echo -e "${YELLOW}Step 3: Installing systemd service...${NC}"
+echo -e "${YELLOW}Step 3: Checking uv installation...${NC}"
+if ! command -v uv &> /dev/null; then
+    echo -e "${YELLOW}⚠ uv not found. Installing uv...${NC}"
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+echo -e "${GREEN}✓ uv installed at $(which uv)${NC}"
+
+echo -e "${YELLOW}Step 4: Installing Python ${PYTHON_VERSION}...${NC}"
+uv python install ${PYTHON_VERSION}
+echo -e "${GREEN}✓ Python ${PYTHON_VERSION} installed${NC}"
+
+echo -e "${YELLOW}Step 5: Creating virtual environment...${NC}"
+cd $BACKEND_DIR
+uv venv --python ${PYTHON_VERSION}
+echo -e "${GREEN}✓ Virtual environment created${NC}"
+
+echo -e "${YELLOW}Step 6: Installing dependencies with uv...${NC}"
+uv sync --frozen
+echo -e "${GREEN}✓ Dependencies installed${NC}"
+
+echo -e "${YELLOW}Step 7: Installing systemd service...${NC}"
 cp $SERVICE_FILE /etc/systemd/system/$SERVICE_NAME.service
 chmod 644 /etc/systemd/system/$SERVICE_NAME.service
 echo -e "${GREEN}✓ Service file installed${NC}"
 
-echo -e "${YELLOW}Step 4: Reloading systemd daemon...${NC}"
+echo -e "${YELLOW}Step 8: Reloading systemd daemon...${NC}"
 systemctl daemon-reload
 echo -e "${GREEN}✓ Systemd daemon reloaded${NC}"
 
-echo -e "${YELLOW}Step 5: Enabling service...${NC}"
+echo -e "${YELLOW}Step 9: Enabling service...${NC}"
 systemctl enable $SERVICE_NAME
 echo -e "${GREEN}✓ Service enabled (will start on boot)${NC}"
 
-echo -e "${YELLOW}Step 6: Checking environment file...${NC}"
+echo -e "${YELLOW}Step 10: Checking environment file...${NC}"
 if [ -f "$BACKEND_DIR/.env" ]; then
     echo -e "${GREEN}✓ Environment file exists: $BACKEND_DIR/.env${NC}"
 else
-    echo -e "${YELLOW}⚠ Environment file not found!${NC}"
+    echo -e "${RED}✗ Environment file not found!${NC}"
     echo -e "${YELLOW}  Please copy $ENV_TEMPLATE to $BACKEND_DIR/.env${NC}"
     echo -e "${YELLOW}  and configure your environment variables.${NC}"
+    echo -e "${YELLOW}  Then run: sudo systemctl start $SERVICE_NAME${NC}"
 fi
 
 echo -e "${GREEN}==================================${NC}"
@@ -98,4 +121,8 @@ echo "  sudo systemctl stop $SERVICE_NAME     # Stop service"
 echo "  sudo systemctl restart $SERVICE_NAME  # Restart service"
 echo "  sudo systemctl reload $SERVICE_NAME   # Reload configuration"
 echo "  sudo systemctl disable $SERVICE_NAME  # Disable on boot"
+echo ""
+echo -e "${YELLOW}Python version:${NC}"
+echo "  Python ${PYTHON_VERSION} installed via uv"
+echo "  Virtualenv: $BACKEND_DIR/.venv"
 echo ""
