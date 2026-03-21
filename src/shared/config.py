@@ -27,6 +27,7 @@ class Settings(BaseSettings):
 
     # Telegram
     TELEGRAM_TOKEN: str = ""
+    TELEGRAM_STARS_TO_USD: float = 0.02  # 1 Star ≈ $0.02 USD
 
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://user:pass@localhost:5432/usipipo"
