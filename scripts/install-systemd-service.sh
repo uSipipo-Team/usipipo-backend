@@ -17,10 +17,10 @@ NC='\033[0m' # No Color
 # Configuration
 SERVICE_NAME="usipipo-backend"
 SERVICE_FILE="deploy/usipipo-backend.service"
-ENV_TEMPLATE="deploy/.env.template"
+ENV_TEMPLATE="example.env"
 BACKEND_USER="usipipo"
 BACKEND_GROUP="usipipo"
-BACKEND_DIR="/home/usipipo/usipipo-backend"
+BACKEND_DIR="/home/mowgli/usipipo/usipipo-backend"
 PYTHON_VERSION="3.13"
 
 echo -e "${GREEN}==================================${NC}"
