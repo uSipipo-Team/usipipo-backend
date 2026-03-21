@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from .infrastructure.api.v1.routes.admin import router as admin_router
 from .infrastructure.api.v1.routes.auth import router as auth_router
 from .infrastructure.api.v1.routes.billing import router as billing_router
 from .infrastructure.api.v1.routes.consumption_invoices import (
@@ -51,6 +52,7 @@ app.include_router(billing_router, prefix=api_prefix)
 app.include_router(subscriptions_router, prefix=api_prefix)
 app.include_router(consumption_invoices_router, prefix=api_prefix)
 app.include_router(tickets_router, prefix=api_prefix)
+app.include_router(admin_router, prefix=api_prefix)
 
 # Incluir webhooks (sin prefijo de API)
 app.include_router(crypto_webhook_router, prefix=api_prefix)

@@ -10,6 +10,11 @@ class IVPNRepository(ABC):
     """Contrato para repositorio de claves VPN."""
 
     @abstractmethod
+    async def get_all(self) -> list[VpnKey]:
+        """Obtiene todas las claves VPN."""
+        pass
+
+    @abstractmethod
     async def get_by_id(self, key_id: UUID) -> VpnKey | None:
         """Obtiene clave VPN por ID."""
         pass

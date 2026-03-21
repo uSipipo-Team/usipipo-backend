@@ -1,5 +1,6 @@
 """Routes de API v1."""
 
+from .admin import router as admin_router
 from .auth import router as auth_router
 from .billing import router as billing_router
 from .consumption_invoices import router as consumption_invoices_router
@@ -16,4 +17,5 @@ __all__ = [
     "subscriptions_router",
     "consumption_invoices_router",
     "tickets_router",
+    "admin_router",
 ]

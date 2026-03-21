@@ -16,6 +16,17 @@ class UserRepository(IUserRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    async def get_all(self) -> list[User]:
+        """
+        Obtiene todos los usuarios.
+
+        Returns:
+            Lista de todos los usuarios
+        """
+        result = await self.session.execute(select(UserModel))
+        models = result.scalars().all()
+        return [model.to_entity() for model in models]
+
     async def get_by_id(self, user_id: UUID) -> User | None:
         """
         Obtiene usuario por ID.

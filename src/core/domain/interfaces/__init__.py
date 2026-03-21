@@ -1,5 +1,11 @@
 """Interfaces de repositorio."""
 
+from .i_admin_service import (
+    IAdminKeyService,
+    IAdminServerService,
+    IAdminStatsService,
+    IAdminUserService,
+)
 from .i_consumption_billing_repository import IConsumptionBillingRepository
 from .i_subscription_repository import ISubscriptionRepository
 from .i_subscription_transaction_repository import ISubscriptionTransactionRepository
@@ -14,4 +20,8 @@ __all__ = [
     "ISubscriptionTransactionRepository",
     "IConsumptionBillingRepository",
     "ITicketRepository",
+    "IAdminStatsService",
+    "IAdminUserService",
+    "IAdminKeyService",
+    "IAdminServerService",
 ]

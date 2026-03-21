@@ -10,6 +10,11 @@ class IPaymentRepository(ABC):
     """Contract for payment repository."""
 
     @abstractmethod
+    async def get_all(self) -> list[Payment]:
+        """Gets all payments."""
+        pass
+
+    @abstractmethod
     async def get_by_id(self, payment_id: UUID) -> Payment | None:
         """Gets payment by ID."""
         pass

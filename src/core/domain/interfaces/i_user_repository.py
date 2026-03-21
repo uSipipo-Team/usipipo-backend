@@ -10,6 +10,11 @@ class IUserRepository(ABC):
     """Contrato para repositorio de usuarios."""
 
     @abstractmethod
+    async def get_all(self) -> list[User]:
+        """Obtiene todos los usuarios."""
+        pass
+
+    @abstractmethod
     async def get_by_id(self, user_id: UUID) -> User | None:
         """Obtiene usuario por ID."""
         pass
