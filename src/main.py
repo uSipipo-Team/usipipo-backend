@@ -11,6 +11,7 @@ from .infrastructure.api.v1.routes.consumption_invoices import (
 )
 from .infrastructure.api.v1.routes.payments import router as payments_router
 from .infrastructure.api.v1.routes.subscriptions import router as subscriptions_router
+from .infrastructure.api.v1.routes.tickets import router as tickets_router
 from .infrastructure.api.v1.routes.vpn import router as vpn_router
 from .infrastructure.api.v1.webhooks.crypto import router as crypto_webhook_router
 from .infrastructure.api.v1.webhooks.telegram_stars import router as telegram_stars_webhook_router
@@ -49,6 +50,7 @@ app.include_router(payments_router, prefix=api_prefix)
 app.include_router(billing_router, prefix=api_prefix)
 app.include_router(subscriptions_router, prefix=api_prefix)
 app.include_router(consumption_invoices_router, prefix=api_prefix)
+app.include_router(tickets_router, prefix=api_prefix)
 
 # Incluir webhooks (sin prefijo de API)
 app.include_router(crypto_webhook_router, prefix=api_prefix)

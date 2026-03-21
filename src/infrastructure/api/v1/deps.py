@@ -8,12 +8,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from usipipo_commons.domain.entities.user import User
 
 from src.core.application.services.subscription_service import SubscriptionService
+from src.core.application.services.ticket_service import TicketService
 from src.core.application.services.user_service import UserService
 from src.core.application.services.vpn_service import VpnService
 from src.infrastructure.persistence.database import get_db
 from src.infrastructure.persistence.repositories.subscription_repository import (
     SubscriptionRepository,
 )
+from src.infrastructure.persistence.repositories.ticket_repository import TicketRepository
 from src.infrastructure.persistence.repositories.user_repository import UserRepository
 from src.infrastructure.persistence.repositories.vpn_repository import VpnRepository
 from src.infrastructure.vpn_providers.outline_client import OutlineClient
@@ -140,3 +142,19 @@ async def get_subscription_service(
     subscription_repo = SubscriptionRepository(db)
     user_repo = UserRepository(db)
     return SubscriptionService(subscription_repo, user_repo)
+
+
+async def get_ticket_service(
+    db: AsyncSession = Depends(get_db),
+) -> TicketService:
+    """
+    Dependency para obtener TicketService.
+
+    Args:
+        db: Sesión de base de datos
+
+    Returns:
+        TicketService: Servicio de tickets
+    """
+    ticket_repo = TicketRepository(db)
+    return TicketService(ticket_repo)

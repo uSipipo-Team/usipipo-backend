@@ -1,14 +1,18 @@
 """Modelo SQLAlchemy para usuarios."""
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import BigInteger, Boolean, DateTime, Float, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from usipipo_commons.domain.entities.user import User
 
 from src.infrastructure.persistence.database import Base
+
+if TYPE_CHECKING:
+    from src.infrastructure.persistence.models.ticket_model import TicketModel
 
 
 class UserModel(Base):
@@ -30,6 +34,11 @@ class UserModel(Base):
     total_purchased_gb: Mapped[float] = mapped_column(Float, default=0.0)
     referral_code: Mapped[str] = mapped_column(String(20), unique=True, index=True)
     referred_by: Mapped[UUID | None] = mapped_column(nullable=True, index=True)
+
+    # Relationships
+    tickets: Mapped[list["TicketModel"]] = relationship(
+        back_populates="user", foreign_keys="TicketModel.user_id"
+    )
 
     def to_entity(self) -> User:
         """
