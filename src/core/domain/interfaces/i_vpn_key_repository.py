@@ -33,3 +33,33 @@ class IVpnKeyRepository(ABC):
     async def delete(self, key_id: UUID) -> bool:
         """Deletes a VPN key."""
         pass
+
+    @abstractmethod
+    async def update_usage(self, key_id: UUID, data_used_gb: float) -> bool:
+        """Updates data usage for a VPN key."""
+        pass
+
+    @abstractmethod
+    async def reset_data_usage(self, key_id: UUID) -> bool:
+        """Resets data usage for a VPN key (new billing cycle)."""
+        pass
+
+    @abstractmethod
+    async def update_data_limit(self, key_id: UUID, data_limit_gb: float) -> bool:
+        """Updates data limit for a VPN key."""
+        pass
+
+    @abstractmethod
+    async def get_keys_needing_reset(self) -> list[VpnKey]:
+        """Gets keys that need billing cycle reset."""
+        pass
+
+    @abstractmethod
+    async def get_all_active(self) -> list[VpnKey]:
+        """Gets all active VPN keys in the system."""
+        pass
+
+    @abstractmethod
+    async def get_all_keys(self) -> list[VpnKey]:
+        """Gets all VPN keys in the system (active and inactive)."""
+        pass
