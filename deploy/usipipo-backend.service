@@ -1,0 +1,42 @@
+[Unit]
+Description=uSipipo Backend API Service
+Documentation=https://github.com/uSipipo-Team/usipipo-backend
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=notify
+User=usipipo
+Group=usipipo
+WorkingDirectory=/home/usipipo/usipipo-backend
+
+# Environment
+Environment="PATH=/home/usipipo/usipipo-backend/.venv/bin"
+EnvironmentFile=/home/usipipo/usipipo-backend/.env
+
+# Execution
+ExecStart=/home/usipipo/usipipo-backend/.venv/bin/uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4
+ExecReload=/bin/kill -s HUP $MAINPID
+
+# Restart policy
+Restart=always
+RestartSec=10
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/usipipo/usipipo-backend/logs
+
+# Resource limits
+LimitNOFILE=65535
+Nice=-5
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=usipipo-backend
+
+[Install]
+WantedBy=multi-user.target
