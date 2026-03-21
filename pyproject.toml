@@ -7,7 +7,7 @@ license = {text = "MIT"}
 authors = [{name = "uSipipo Team", email = "usipipo@gamil.com"}]
 
 dependencies = [
-    "usipipo-commons>=0.8.0",
+    "usipipo-commons @ file:///home/mowgli/usipipo/usipipo-commons/dist/usipipo_commons-0.9.0-py3-none-any.whl",
     "fastapi>=0.109.0",
     "uvicorn[standard]>=0.27.0",
     "pydantic-settings>=2.0.0",
@@ -63,6 +63,7 @@ ignore = [
     "B008",   # function calls in argument defaults (needed for dependencies)
     "B904",   # raise without from (acceptable for re-raising as different exception type)
     "SIM102", # collapsible if statements (sometimes reduces readability)
+    "F821",   # undefined name (false positive with SQLAlchemy forward references)
 ]
 
 [tool.ruff.lint.isort]

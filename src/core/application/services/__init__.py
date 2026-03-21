@@ -17,6 +17,8 @@ from .subscription_payment_service import SubscriptionPaymentService
 from .subscription_service import SubscriptionService
 from .user_service import UserService
 from .vpn_service import VpnService
+from .wallet_management_service import WalletManagementService
+from .wallet_pool_service import WalletPoolService
 
 __all__ = [
     "UserService",
@@ -34,4 +36,6 @@ __all__ = [
     "AdminUserService",
     "AdminKeyService",
     "AdminServerService",
+    "WalletManagementService",
+    "WalletPoolService",
 ]

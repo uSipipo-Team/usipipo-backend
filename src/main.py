@@ -16,6 +16,7 @@ from .infrastructure.api.v1.routes.referrals import router as referrals_router
 from .infrastructure.api.v1.routes.subscriptions import router as subscriptions_router
 from .infrastructure.api.v1.routes.tickets import router as tickets_router
 from .infrastructure.api.v1.routes.vpn import router as vpn_router
+from .infrastructure.api.v1.routes.wallets import router as wallets_router
 from .infrastructure.api.v1.webhooks.crypto import router as crypto_webhook_router
 from .infrastructure.api.v1.webhooks.telegram_stars import router as telegram_stars_webhook_router
 from .infrastructure.persistence.database import close_db, init_db
@@ -56,6 +57,7 @@ app.include_router(consumption_invoices_router, prefix=api_prefix)
 app.include_router(data_packages_router, prefix=api_prefix)
 app.include_router(referrals_router, prefix=api_prefix)
 app.include_router(tickets_router, prefix=api_prefix)
+app.include_router(wallets_router, prefix=api_prefix)
 app.include_router(admin_router, prefix=api_prefix)
 
 # Incluir webhooks (sin prefijo de API)
