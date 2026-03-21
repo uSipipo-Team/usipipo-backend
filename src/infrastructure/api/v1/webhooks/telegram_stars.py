@@ -80,27 +80,28 @@ async def process_telegram_stars_payment(
 ) -> None:
     """Processes a Telegram Stars payment in the background."""
     try:
-        db = get_db()
-        user_repo = UserRepository(db)
-        payment_repo = PaymentRepository(db)
-        payment_service = PaymentService(payment_repo, user_repo)
+        async for db in get_db():
+            user_repo = UserRepository(db)
+            payment_repo = PaymentRepository(db)
+            payment_service = PaymentService(payment_repo, user_repo)
 
-        user = await user_repo.get_by_telegram_id(user_telegram_id)
-        if not user:
-            logger.error(f"User not found: {user_telegram_id}")
-            return
+            user = await user_repo.get_by_telegram_id(user_telegram_id)
+            if not user:
+                logger.error(f"User not found: {user_telegram_id}")
+                return
 
-        payments = await payment_service.get_user_payments(user.id)
-        pending_payments = [
-            p for p in payments if p.status == "pending" and p.method == "telegram_stars"
-        ]
+            payments = await payment_service.get_user_payments(user.id)
+            pending_payments = [
+                p for p in payments if p.status == "pending" and p.method == "telegram_stars"
+            ]
 
-        if pending_payments:
-            payment = pending_payments[0]
-            await payment_service.complete_payment(payment_id=payment.id)
-            logger.info(f"Completed Telegram Stars payment: {payment.id}")
-        else:
-            logger.warning(f"No pending payment found for user {user_telegram_id}")
+            if pending_payments:
+                payment = pending_payments[0]
+                await payment_service.complete_payment(payment_id=payment.id)
+                logger.info(f"Completed Telegram Stars payment: {payment.id}")
+            else:
+                logger.warning(f"No pending payment found for user {user_telegram_id}")
+            break
 
     except Exception as e:
         logger.error(f"Failed to process Telegram Stars payment: {e}")

@@ -86,4 +86,5 @@ class CryptoTransactionRepository(ICryptoTransactionRepository):
             .values(**update_values)
         )
         await self.session.commit()
-        return result.rowcount > 0 if result.rowcount else False
+        rowcount = result.rowcount or 0
+        return rowcount > 0

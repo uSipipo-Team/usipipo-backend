@@ -79,4 +79,4 @@ class SubscriptionTransactionRepository(ISubscriptionTransactionRepository):
             )
         )
         await self.session.commit()
-        return result.rowcount if result.rowcount else 0
+        return result.rowcount or 0
