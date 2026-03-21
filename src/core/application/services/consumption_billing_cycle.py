@@ -15,9 +15,13 @@ from usipipo_commons.domain.entities.consumption_billing import (
     BillingStatus,
     ConsumptionBilling,
 )
+from usipipo_commons.domain.enums.consumption_payment_method import ConsumptionPaymentMethod
 
 from src.core.domain.interfaces.i_consumption_billing_repository import (
     IConsumptionBillingRepository,
+)
+from src.core.domain.interfaces.i_consumption_invoice_repository import (
+    IConsumptionInvoiceRepository,
 )
 from src.core.domain.interfaces.i_user_repository import IUserRepository
 
@@ -43,10 +47,12 @@ class ConsumptionCycleService:
         billing_repo: IConsumptionBillingRepository,
         user_repo: IUserRepository,
         cycle_days: int,
+        invoice_repo: IConsumptionInvoiceRepository | None = None,
     ):
         self.billing_repo = billing_repo
         self.user_repo = user_repo
         self.cycle_days = cycle_days
+        self.invoice_repo = invoice_repo
 
     async def record_data_usage(self, user_id: int, mb_used: float, current_user_id: int) -> bool:
         """
@@ -134,7 +140,7 @@ class ConsumptionCycleService:
 
     async def close_billing_cycle(self, billing_id: uuid.UUID, current_user_id: int) -> bool:
         """
-        Cierra un ciclo de facturación.
+        Cierra un ciclo de facturación y crea la factura correspondiente.
 
         Args:
             billing_id: ID del ciclo a cerrar
@@ -173,6 +179,28 @@ class ConsumptionCycleService:
                     logger.warning(
                         f"VPN key blocking not implemented - user {billing.user_id} "
                         f"has debt: ${billing.total_cost_usd:.2f}"
+                    )
+
+                # Crear factura si hay invoice_repo
+                if self.invoice_repo and billing.total_cost_usd > 0:
+                    from usipipo_commons.domain.entities.consumption_invoice import (
+                        ConsumptionInvoice,
+                    )
+                    from usipipo_commons.domain.enums.invoice_status import InvoiceStatus
+
+                    invoice = ConsumptionInvoice(
+                        billing_id=billing_id,
+                        user_id=billing.user_id,
+                        amount_usd=billing.total_cost_usd,
+                        wallet_address=f"0x{uuid.uuid4().hex[:40]}",
+                        payment_method=ConsumptionPaymentMethod.CRYPTO,
+                        status=InvoiceStatus.PENDING,
+                    )
+                    await self.invoice_repo.save(invoice, current_user_id)
+                    logger.info(
+                        f"Factura creada - billing_id={billing_id}, "
+                        f"user_id={billing.user_id}, "
+                        f"amount=${billing.total_cost_usd:.2f}"
                     )
 
                 logger.info(

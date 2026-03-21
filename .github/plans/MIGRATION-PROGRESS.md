@@ -329,6 +329,18 @@ Scheduled Jobs:
 
 ---
 
+## 🆕 Latest Changes (PR #5)
+
+**Date:** 2026-03-21
+**PR:** https://github.com/uSipipo-Team/usipipo-backend/pull/5
+**Status:** ✅ Merged to main
+
+#### **What was updated:**
+- ✅ Updated `pyproject.toml` dependencies
+- ✅ Updated `uv.lock` lockfile
+
+---
+
 ## 📦 Summary of Week 5 Migration (In Progress)
 
 ### **New Services Created:**

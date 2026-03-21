@@ -1,5 +1,6 @@
 """Repositorios de persistencia."""
 
+from .consumption_invoice_repository import ConsumptionInvoiceRepository
 from .crypto_order_repository import CryptoOrderRepository
 from .crypto_transaction_repository import CryptoTransactionRepository
 from .payment_repository import PaymentRepository
@@ -18,4 +19,5 @@ __all__ = [
     "WebhookTokenRepository",
     "SubscriptionRepository",
     "SubscriptionTransactionRepository",
+    "ConsumptionInvoiceRepository",
 ]
