@@ -70,6 +70,13 @@ class Settings(BaseSettings):
     CONSUMPTION_CYCLE_DAYS: int = 30
     CONSUMPTION_INVOICE_EXPIRY_MINUTES: int = 30
 
+    # ==================================================================
+    # SISTEMA DE REFERIDOS
+    # ==================================================================
+    REFERRAL_CREDITS_PER_REFERRAL: int = 100
+    REFERRAL_BONUS_NEW_USER: int = 50
+    REFERRAL_CREDITS_PER_GB: int = 100
+
     @property
     def is_development(self) -> bool:
         """Verifica si la aplicación está en modo desarrollo."""

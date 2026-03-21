@@ -7,11 +7,17 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from usipipo_commons.domain.entities.user import User
 
+from src.core.application.services.data_package_service import DataPackageService
+from src.core.application.services.referral_service import ReferralService
 from src.core.application.services.subscription_service import SubscriptionService
 from src.core.application.services.ticket_service import TicketService
 from src.core.application.services.user_service import UserService
 from src.core.application.services.vpn_service import VpnService
 from src.infrastructure.persistence.database import get_db
+from src.infrastructure.persistence.repositories.data_package_repository import (
+    DataPackageRepository,
+)
+from src.infrastructure.persistence.repositories.referral_repository import ReferralRepository
 from src.infrastructure.persistence.repositories.subscription_repository import (
     SubscriptionRepository,
 )
@@ -158,3 +164,37 @@ async def get_ticket_service(
     """
     ticket_repo = TicketRepository(db)
     return TicketService(ticket_repo)
+
+
+async def get_data_package_service(
+    db: AsyncSession = Depends(get_db),
+) -> DataPackageService:
+    """
+    Dependency para obtener DataPackageService.
+
+    Args:
+        db: Sesión de base de datos
+
+    Returns:
+        DataPackageService: Servicio de paquetes de datos
+    """
+    package_repo = DataPackageRepository(db)
+    user_repo = UserRepository(db)
+    return DataPackageService(package_repo, user_repo)
+
+
+async def get_referral_service(
+    db: AsyncSession = Depends(get_db),
+) -> ReferralService:
+    """
+    Dependency para obtener ReferralService.
+
+    Args:
+        db: Sesión de base de datos
+
+    Returns:
+        ReferralService: Servicio de referidos
+    """
+    user_repo = UserRepository(db)
+    referral_repo = ReferralRepository(db)
+    return ReferralService(user_repo, referral_repo)

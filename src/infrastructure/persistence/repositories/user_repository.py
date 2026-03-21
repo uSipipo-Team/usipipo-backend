@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from usipipo_commons.domain.entities.user import User
 
@@ -57,6 +57,46 @@ class UserRepository(IUserRepository):
         model = result.scalar_one_or_none()
         return model.to_entity() if model else None
 
+    async def get_by_referral_code(self, referral_code: str) -> User | None:
+        """
+        Obtiene usuario por código de referido.
+
+        Args:
+            referral_code: Código de referido
+
+        Returns:
+            User o None si no existe
+        """
+        result = await self.session.execute(
+            select(UserModel).where(UserModel.referral_code == referral_code)
+        )
+        model = result.scalar_one_or_none()
+        return model.to_entity() if model else None
+
+    async def update_referral_credits(self, user_id: UUID, credits: int) -> bool:
+        """
+        Actualiza los créditos de referido de un usuario.
+
+        Args:
+            user_id: UUID del usuario
+            credits: Créditos a añadir (pueden ser negativos)
+
+        Returns:
+            True si se actualizó correctamente
+        """
+        try:
+            query = (
+                update(UserModel)
+                .where(UserModel.id == user_id)
+                .values(referral_credits=UserModel.referral_credits + credits)
+            )
+            await self.session.execute(query)
+            await self.session.commit()
+            return True
+        except Exception:
+            await self.session.rollback()
+            return False
+
     async def create(self, user: User) -> User:
         """
         Crea un nuevo usuario.
@@ -84,7 +124,7 @@ class UserRepository(IUserRepository):
             Usuario actualizado
         """
         model = UserModel.from_entity(user)
-        await self.session.merge(model)
+        model = await self.session.merge(model)
         await self.session.commit()
         await self.session.refresh(model)
         return model.to_entity()

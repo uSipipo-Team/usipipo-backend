@@ -25,6 +25,16 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
+    async def get_by_referral_code(self, referral_code: str) -> User | None:
+        """Obtiene usuario por código de referido."""
+        pass
+
+    @abstractmethod
+    async def update_referral_credits(self, user_id: UUID, credits: int) -> bool:
+        """Actualiza los créditos de referido de un usuario."""
+        pass
+
+    @abstractmethod
     async def create(self, user: User) -> User:
         """Crea un nuevo usuario."""
         pass

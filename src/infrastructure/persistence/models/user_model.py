@@ -34,6 +34,11 @@ class UserModel(Base):
     total_purchased_gb: Mapped[float] = mapped_column(Float, default=0.0)
     referral_code: Mapped[str] = mapped_column(String(20), unique=True, index=True)
     referred_by: Mapped[UUID | None] = mapped_column(nullable=True, index=True)
+    referral_credits: Mapped[int] = mapped_column(BigInteger, default=0)
+    purchase_count: Mapped[int] = mapped_column(BigInteger, default=0)
+    loyalty_bonus_percent: Mapped[int] = mapped_column(BigInteger, default=0)
+    welcome_bonus_used: Mapped[bool] = mapped_column(Boolean, default=False)
+    referred_users_with_purchase: Mapped[int] = mapped_column(BigInteger, default=0)
 
     # Relationships
     tickets: Mapped[list["TicketModel"]] = relationship(
@@ -60,6 +65,11 @@ class UserModel(Base):
             total_purchased_gb=self.total_purchased_gb,
             referral_code=self.referral_code,
             referred_by=self.referred_by,
+            referral_credits=self.referral_credits,
+            purchase_count=self.purchase_count,
+            loyalty_bonus_percent=self.loyalty_bonus_percent,
+            welcome_bonus_used=self.welcome_bonus_used,
+            referred_users_with_purchase=self.referred_users_with_purchase,
         )
 
     @classmethod
@@ -84,4 +94,9 @@ class UserModel(Base):
             total_purchased_gb=entity.total_purchased_gb,
             referral_code=entity.referral_code,
             referred_by=entity.referred_by,
+            referral_credits=entity.referral_credits,
+            purchase_count=entity.purchase_count,
+            loyalty_bonus_percent=entity.loyalty_bonus_percent,
+            welcome_bonus_used=entity.welcome_bonus_used,
+            referred_users_with_purchase=entity.referred_users_with_purchase,
         )
