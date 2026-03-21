@@ -7,7 +7,7 @@ license = {text = "MIT"}
 authors = [{name = "uSipipo Team", email = "usipipo@gamil.com"}]
 
 dependencies = [
-    "usipipo-commons @ file:///home/mowgli/usipipo/usipipo-commons",
+    "usipipo-commons>=0.5.2",
     "fastapi>=0.109.0",
     "uvicorn[standard]>=0.27.0",
     "pydantic-settings>=2.0.0",
