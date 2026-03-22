@@ -66,9 +66,7 @@ async def get_db() -> AsyncGenerator[AsyncSession]:
 
 
 async def init_db() -> None:
-    """Inicializa la base de datos (crear tablas)."""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    pass
 
 
 async def close_db() -> None:

@@ -6,9 +6,13 @@ from .consumption_billing_model import ConsumptionBillingModel
 from .consumption_invoice_model import ConsumptionInvoiceModel
 from .crypto_order_model import CryptoOrderModel
 from .crypto_transaction_model import CryptoTransactionModel
+from .data_package_model import DataPackageModel
 from .payment_model import PaymentModel
+from .referral_model import ReferralModel
 from .subscription_plan_model import SubscriptionPlanModel
 from .subscription_transaction_model import SubscriptionTransactionModel
+from .ticket_message_model import TicketMessageModel
+from .ticket_model import TicketModel
 from .user_model import UserModel
 from .vpn_key_model import VpnKeyModel
 from .wallet_model import WalletModel
@@ -27,6 +31,10 @@ __all__ = [
     "SubscriptionTransactionModel",
     "ConsumptionBillingModel",
     "ConsumptionInvoiceModel",
+    "TicketModel",
+    "TicketMessageModel",
+    "DataPackageModel",
+    "ReferralModel",
     "WalletModel",
     "WalletPoolModel",
 ]
