@@ -1,42 +1,80 @@
 version: '3.8'
 
 services:
+  # Backend API Service
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: usipipo-backend:latest
+    container_name: usipipo-backend
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://usipipo:pass@db:5432/usipipo
-      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql+asyncpg://usipipo:${POSTGRES_PASSWORD:-pass}@db:5432/usipipo
+      - REDIS_URL=redis://redis:6379/0
       - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN:-}
-      - APP_ENV=development
-      - DEBUG=true
+      - APP_ENV=${APP_ENV:-development}
+      - DEBUG=${DEBUG:-false}
+      - API_PREFIX=${API_PREFIX:-/api/v1}
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
     volumes:
-      - ./src:/app/src
+      # Mount logs directory for persistence
+      - backend_logs:/app/logs
+    networks:
+      - usipipo-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
 
+  # PostgreSQL Database
   db:
     image: postgres:15-alpine
+    container_name: usipipo-db
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=usipipo
       - POSTGRES_USER=usipipo
-      - POSTGRES_PASSWORD=pass
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pass}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U usipipo"]
+      test: ["CMD-SHELL", "pg_isready -U usipipo -d usipipo"]
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 10s
+    networks:
+      - usipipo-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
 
+  # Redis Cache
   redis:
     image: redis:7-alpine
+    container_name: usipipo-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data
     healthcheck:
@@ -44,7 +82,48 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 5s
+    networks:
+      - usipipo-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # pgAdmin for database management (optional, dev only)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: usipipo-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL:-admin@usipipo.com}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:-admin}
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
+    networks:
+      - usipipo-network
+    restart: unless-stopped
+    profiles:
+      - dev
+
+networks:
+  usipipo-network:
+    driver: bridge
+    name: usipipo-network
 
 volumes:
   postgres_data:
+    name: usipipo-postgres-data
   redis_data:
+    name: usipipo-redis-data
+  backend_logs:
+    name: usipipo-backend-logs
+  pgadmin_data:
+    name: usipipo-pgadmin-data
