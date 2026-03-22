@@ -1,6 +1,7 @@
 """Modelo SQLAlchemy para wallets BSC."""
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, Float, ForeignKey, String
@@ -10,6 +11,9 @@ from usipipo_commons.domain.entities.wallet import Wallet
 from usipipo_commons.domain.enums.wallet_status import WalletStatus
 
 from src.infrastructure.persistence.database import Base
+
+if TYPE_CHECKING:
+    from src.infrastructure.persistence.models.user_model import UserModel
 
 
 class WalletModel(Base):

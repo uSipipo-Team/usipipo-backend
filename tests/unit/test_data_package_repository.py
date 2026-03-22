@@ -159,4 +159,5 @@ async def test_update_usage(test_session: AsyncSession):
 
     # Verificar
     updated = await repo.get_by_id(saved.id, telegram_id)
+    assert updated is not None
     assert updated.data_used_bytes == usage_bytes

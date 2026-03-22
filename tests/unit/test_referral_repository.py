@@ -157,4 +157,5 @@ async def test_mark_bonus_applied(test_session: AsyncSession):
     assert success is True
 
     updated = await referral_repo.get_by_id(saved.id)
+    assert updated is not None
     assert updated.bonus_applied is True
