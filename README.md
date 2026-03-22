@@ -505,8 +505,8 @@ SOFTWARE.
 - **Latest Release:** [v0.4.0](https://github.com/uSipipo-Team/usipipo-backend/releases/tag/v0.4.0)
 
 ### Services
-- **Telegram Bot:** [@uSipipo_Bot](https://t.me/uSipipo_Bot)
-- **Landing Page:** [usipipo.com](https://usipipo.com)
+- **Telegram Bot:** [@usipipobot](https://t.me/usipipobot)
+- **Landing Page:** [usipipo.duckdns.org](https://usipipo.duckdns.org)
 
 ---
 
