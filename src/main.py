@@ -1,8 +1,10 @@
 """FastAPI application entry point."""
 
+import traceback
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 from .infrastructure.api.v1.routes.admin import router as admin_router
 from .infrastructure.api.v1.routes.auth import router as auth_router
@@ -79,3 +81,18 @@ async def root():
         "docs": "/docs",
         "health": "/health",
     }
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Global exception handler for debugging."""
+    tb = traceback.format_exc()
+    print(f"🔴 EXCEPTION on {request.method} {request.url}:\n{tb}")
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": str(exc),
+            "type": type(exc).__name__,
+            "traceback": tb.split("\n"),
+        },
+    )

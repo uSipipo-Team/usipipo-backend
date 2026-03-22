@@ -6,6 +6,7 @@ from datetime import UTC, datetime, timedelta
 from usipipo_commons.constants.plans import MAX_KEYS_PER_USER
 from usipipo_commons.domain.entities.vpn_key import VpnKey
 from usipipo_commons.domain.enums.key_status import KeyStatus
+from usipipo_commons.domain.enums.key_type import KeyType
 from usipipo_commons.domain.enums.vpn_type import VpnType
 
 from src.core.application.exceptions import (
@@ -72,7 +73,7 @@ class VpnService:
 
         # Verificar límite de claves
         existing_keys = await self.vpn_repo.get_by_user_id(user_id)
-        active_keys = [k for k in existing_keys if k.status == KeyStatus.ACTIVE]
+        active_keys = [k for k in existing_keys if k.is_active]
 
         if len(active_keys) >= MAX_KEYS_PER_USER:
             raise VpnKeyLimitReachedError(f"User reached max keys ({MAX_KEYS_PER_USER})")
@@ -95,19 +96,26 @@ class VpnService:
         now = datetime.now(UTC)
         expires_at = now + timedelta(days=30)
 
-        # Crear entidad
+        # Convertir VpnType a KeyType para la entidad
+        key_type_enum = KeyType(vpn_type_enum.value)
+
+        # Calcular data_limit_bytes
+        data_limit_bytes = int(data_limit_gb * 1024**3)
+
+        # Crear entidad (VpnKey usa key_type, no vpn_type)
         vpn_key = VpnKey(
-            id=uuid.uuid4(),
+            id=str(uuid.uuid4()),
             user_id=user_id,
             name=name,
-            vpn_type=vpn_type_enum,
-            status=KeyStatus.ACTIVE,
-            config=config,
+            key_type=key_type_enum,
+            key_data=config,
+            external_id="",
+            is_active=True,
             created_at=now,
             expires_at=expires_at,
-            last_used_at=None,
-            data_used_gb=0.0,
-            data_limit_gb=data_limit_gb,
+            used_bytes=0,
+            data_limit_bytes=data_limit_bytes,
+            billing_reset_at=now,
         )
 
         # Persistir
@@ -205,14 +213,17 @@ class VpnService:
             id=key.id,
             user_id=key.user_id,
             name=name if name is not None else key.name,
-            vpn_type=key.vpn_type,
-            status=key.status,
-            config=key.config,
+            key_type=key.key_type,
+            key_data=key.key_data,
+            is_active=key.is_active,
             created_at=key.created_at,
             expires_at=key.expires_at,
-            last_used_at=key.last_used_at,
-            data_used_gb=key.data_used_gb,
-            data_limit_gb=data_limit_gb if data_limit_gb is not None else key.data_limit_gb,
+            last_seen_at=key.last_seen_at,
+            used_bytes=key.used_bytes,
+            data_limit_bytes=int(data_limit_gb * 1024**3)
+            if data_limit_gb is not None
+            else key.data_limit_bytes,
+            billing_reset_at=key.billing_reset_at,
         )
 
         return await self.vpn_repo.update(updated_key)
@@ -274,7 +285,7 @@ class VpnService:
             Cantidad de claves activas
         """
         keys = await self.vpn_repo.get_by_user_id(user_id)
-        return len([k for k in keys if k.status == KeyStatus.ACTIVE])
+        return len([k for k in keys if k.is_active])
 
     async def can_create_more_keys(self, user_id: uuid.UUID) -> bool:
         """

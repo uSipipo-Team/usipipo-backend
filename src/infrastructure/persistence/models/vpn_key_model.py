@@ -1,9 +1,9 @@
 """Modelo SQLAlchemy para claves VPN."""
 
 from datetime import datetime
-from uuid import uuid4
+from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, Integer, String, Text
+from sqlalchemy import BigInteger, DateTime, String, Text
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
@@ -19,7 +19,7 @@ class VpnKeyModel(Base):
     __tablename__ = "vpn_keys"
 
     id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid4()))
-    user_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)  # telegram_id
+    user_id: Mapped[UUID] = mapped_column(nullable=False, index=True)  # UUID del usuario
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     key_type: Mapped[KeyType] = mapped_column(SQLEnum(KeyType, name="key_type"), nullable=False)
     key_data: Mapped[str | None] = mapped_column(Text, nullable=True)  # config
@@ -28,8 +28,8 @@ class VpnKeyModel(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    used_bytes: Mapped[int] = mapped_column(Integer, default=0)
-    data_limit_bytes: Mapped[int] = mapped_column(Integer, default=5 * 1024**3)
+    used_bytes: Mapped[int] = mapped_column(BigInteger, default=0)
+    data_limit_bytes: Mapped[int] = mapped_column(BigInteger, default=5 * 1024**3)
     billing_reset_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=datetime.now
     )

@@ -36,7 +36,22 @@ async def list_vpn_keys(
         List[VpnKeyResponse]: Lista de claves VPN
     """
     keys = await vpn_service.get_user_keys(current_user.id)
-    return keys
+    # Mapear entidades a schema de respuesta
+    return [
+        VpnKeyResponse(
+            id=key.id,
+            user_id=key.user_id,
+            name=key.name,
+            key_type=key.key_type,
+            config=key.key_data,
+            created_at=key.created_at,
+            expires_at=key.expires_at,
+            last_used_at=key.last_seen_at,
+            data_used_gb=key.used_gb,
+            data_limit_gb=key.data_limit_gb,
+        )
+        for key in keys
+    ]
 
 
 @router.post(
@@ -70,7 +85,19 @@ async def create_vpn_key(
             vpn_type=request.vpn_type.value,
             data_limit_gb=request.data_limit_gb,
         )
-        return key
+        # Mapear entidad a schema de respuesta
+        return VpnKeyResponse(
+            id=key.id,
+            user_id=key.user_id,
+            name=key.name,
+            key_type=key.key_type,
+            config=key.key_data,
+            created_at=key.created_at,
+            expires_at=key.expires_at,
+            last_used_at=key.last_seen_at,
+            data_used_gb=key.used_gb,
+            data_limit_gb=key.data_limit_gb,
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -118,7 +145,18 @@ async def get_vpn_key(
             detail="Not authorized to access this key",
         )
 
-    return key
+    return VpnKeyResponse(
+        id=key.id,
+        user_id=key.user_id,
+        name=key.name,
+        key_type=key.key_type,
+        config=key.key_data,
+        created_at=key.created_at,
+        expires_at=key.expires_at,
+        last_used_at=key.last_seen_at,
+        data_used_gb=key.used_gb,
+        data_limit_gb=key.data_limit_gb,
+    )
 
 
 @router.delete(
@@ -188,7 +226,18 @@ async def update_vpn_key(
             name=request.name,
             data_limit_gb=request.data_limit_gb,
         )
-        return key
+        return VpnKeyResponse(
+            id=key.id,
+            user_id=key.user_id,
+            name=key.name,
+            key_type=key.key_type,
+            config=key.key_data,
+            created_at=key.created_at,
+            expires_at=key.expires_at,
+            last_used_at=key.last_seen_at,
+            data_used_gb=key.used_gb,
+            data_limit_gb=key.data_limit_gb,
+        )
     except PermissionError:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

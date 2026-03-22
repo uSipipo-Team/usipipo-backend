@@ -68,8 +68,9 @@ class UserService:
             return existing_user
 
         # Generar código de referido único si no se proporciona
+        # Formato: ref_ + 16 chars hex (max 20 chars para caber en DB)
         if not referral_code:
-            referral_code = f"ref_{telegram_id}_{uuid.uuid4().hex[:8]}"
+            referral_code = f"ref_{uuid.uuid4().hex[:16]}"
 
         # Crear nuevo usuario
         new_user = User(
@@ -118,8 +119,9 @@ class UserService:
             raise ValueError(f"User with telegram_id {telegram_id} already exists")
 
         # Generar código de referido único si no se proporciona
+        # Formato: ref_ + 16 chars hex (max 20 chars para caber en DB)
         if not referral_code:
-            referral_code = f"ref_{telegram_id}_{uuid.uuid4().hex[:8]}"
+            referral_code = f"ref_{uuid.uuid4().hex[:16]}"
 
         new_user = User(
             id=uuid.uuid4(),

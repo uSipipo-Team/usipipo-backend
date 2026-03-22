@@ -37,7 +37,9 @@ class VpnRepository(IVPNRepository):
         Returns:
             VpnKey o None si no existe
         """
-        result = await self.session.execute(select(VpnKeyModel).where(VpnKeyModel.id == key_id))
+        result = await self.session.execute(
+            select(VpnKeyModel).where(VpnKeyModel.id == str(key_id))
+        )
         model = result.scalar_one_or_none()
         return model.to_entity() if model else None
 
@@ -99,7 +101,9 @@ class VpnRepository(IVPNRepository):
         Returns:
             True si se eliminó, False si no existía
         """
-        result = await self.session.execute(select(VpnKeyModel).where(VpnKeyModel.id == key_id))
+        result = await self.session.execute(
+            select(VpnKeyModel).where(VpnKeyModel.id == str(key_id))
+        )
         model = result.scalar_one_or_none()
         if model:
             await self.session.delete(model)
