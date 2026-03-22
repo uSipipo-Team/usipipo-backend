@@ -5,7 +5,137 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+---
+
+## [0.4.0] - 2026-03-22
+
+### ✨ Added
+
+#### Documentation
+- **Complete API Documentation** - Full endpoint reference with examples
+- **GitHub Wiki** - Public documentation site with 4 pages
+  - Home.md - Main documentation hub
+  - API-Reference.md - 50+ endpoints documented
+  - Authentication.md - Auth guide with JavaScript/Python examples
+  - Error-Codes.md - HTTP error reference
+- **API.md** - Comprehensive API documentation in docs/ folder
+- **AGENTS.md** - AI agent development guide
+- **CONTRIBUTING.md** - Contribution guidelines
+- **LICENSE** - MIT License
+
+#### Testing
+- **test_all_endpoints.py** - Complete endpoint test script
+  - Tests for all authenticated endpoints
+  - Automatic token generation
+  - Coverage for VPN, Subscriptions, Payments, Referrals, Data Packages, Wallets, Tickets, Billing
+
+#### API Endpoints
+- **GET /api/v1/billing/usage** - User data usage tracking
+- **GET /api/v1/billing/usage/{key_id}** - Per-key usage tracking
+- **Consumption Invoices** - Full CRUD for consumption-based billing
+  - POST /api/v1/invoices - Create invoice
+  - GET /api/v1/invoices/{id} - Get invoice details
+  - GET /api/v1/invoices/user/{user_id} - List user invoices
+  - POST /api/v1/invoices/{id}/pay - Mark as paid
+  - POST /api/v1/invoices/{id}/expire - Mark as expired
+  - DELETE /api/v1/invoices/{id} - Delete invoice
+
+#### Features
+- **Billing Service** - Usage tracking and billing calculations
+- **Consumption Billing** - Pay-as-you-go billing system
+- **Invoice Management** - Complete invoice lifecycle
+
+### 🔧 Changed
+
+#### Database
+- **vpn_keys table** - Changed user_id from INTEGER to UUID
+  - Migration: `6f80ea3bfca9_change_vpn_keys_user_id_from_integer_to_.py`
+  - Added foreign key to users.id
+- **vpn_keys bytes columns** - Changed to BigInteger
+  - `used_bytes`: INTEGER → BIGINT
+  - `data_limit_bytes`: INTEGER → BIGINT
+  - Migration: `a0fe055ac6cb_change_vpn_keys_bytes_columns_to_bigint.py`
+
+#### Models
+- **VpnKeyModel** - Updated user_id to UUID type
+- **WalletModel** - Added TYPE_CHECKING import for UserModel forward reference
+
+#### Services
+- **VpnService** - Fixed entity attribute mapping
+  - Changed `vpn_type` → `key_type` (KeyType enum)
+  - Changed `status` → `is_active` (boolean)
+  - Changed `config` → `key_data`
+  - Changed `data_used_gb` → `used_bytes` / 1024³
+  - Changed `data_limit_gb` → `data_limit_bytes` / 1024³
+- **BillingService** - Fixed byte to GB conversion
+  - Proper conversion: `bytes / (1024 ** 3)` for GB
+
+#### Schemas
+- **VpnKeyResponse** - Added computed_field for vpn_type alias
+- **CreateVpnKeyRequest** - Changed vpn_type to KeyType enum
+
+#### Repositories
+- **VpnKeyRepository** - Fixed UUID comparison
+  - Convert UUID to string for VARCHAR comparison: `str(key_id)`
+
+#### Code Quality
+- **Mypy** - Fixed all pre-existing errors
+  - Removed unused `type: ignore` comments
+  - Fixed decorator order (@property before @computed_field)
+  - Added proper type hints
+
+### 🐛 Fixed
+
+#### Critical Bugs
+- **referral_code generation** - Fixed length to fit VARCHAR(20)
+  - Changed from `ref_{telegram_id}_{uuid[:8]}` (23 chars) to `ref_{uuid[:16]}` (20 chars)
+- **VPN endpoint 500 errors** - Fixed entity/schema mismatch
+  - VpnKey entity now uses correct attributes
+  - Proper mapping between service layer and API responses
+- **Billing usage endpoint** - Fixed attribute errors
+  - Changed from `data_used_gb` to `used_bytes`
+  - Proper byte to GB conversion
+
+#### Type Errors
+- **wallet_model.py** - Added TYPE_CHECKING import for UserModel
+- **wallet_pool_repository.py** - Added `type: ignore[attr-defined]` for rowcount
+- **Test files** - Added None checks for optional attributes
+
+#### API Issues
+- **Decorator order** - Fixed @computed_field and @property order in schemas
+- **Response mapping** - Proper entity to schema conversion in all VPN endpoints
+
+### 📦 Infrastructure
+
+#### Wiki Deployment
+- Enabled GitHub Wiki for documentation
+- Automated wiki upload script (`upload_wiki.py`)
+- 4 documentation pages published
+
+#### Scripts
+- **test_endpoints.py** - Basic endpoint testing
+- **test_all_endpoints.py** - Comprehensive endpoint testing
+- **test_telegram_auth.py** - Telegram auth debugging
+- **upload_wiki.py** - Wiki documentation uploader
+
+### 📝 Documentation
+
+#### External (GitHub Wiki)
+- Complete API reference with 50+ endpoints
+- Authentication guide with code examples
+- Error codes reference
+- Quick start guide
+
+#### Internal (docs/)
+- API.md - Full endpoint documentation
+- Updated DEPLOYMENT.md
+- Updated ARCHITECTURE.md
+
+### 🔒 Security
+
+- Proper UUID handling to prevent SQL injection
+- Type-safe byte calculations
+- Validated all user inputs in invoice endpoints
 
 ---
 
@@ -285,6 +415,7 @@ src/
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 0.4.0 | 2026-03-22 | Complete API Documentation + Billing Endpoints + Bug Fixes |
 | 0.3.1 | 2026-03-21 | Consolidated Migrations with UUID Primary Keys |
 | 0.3.0 | 2026-03-19 | VPN Providers (Outline + WireGuard) + Infrastructure Scripts |
 | 0.2.0 | 2026-03-19 | Auth + VPN endpoints + Pre-commit/CI |
@@ -292,7 +423,7 @@ src/
 
 ---
 
-## Upcoming (v0.4.0)
+## Upcoming (v0.5.0)
 
 Planned for next release:
 
@@ -305,7 +436,8 @@ Planned for next release:
 
 ---
 
-[Unreleased]: https://github.com/uSipipo-Team/usipipo-backend/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/uSipipo-Team/usipipo-backend/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/uSipipo-Team/usipipo-backend/releases/tag/v0.4.0
 [0.3.1]: https://github.com/uSipipo-Team/usipipo-backend/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/uSipipo-Team/usipipo-backend/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/uSipipo-Team/usipipo-backend/compare/v0.1.0...v0.2.0
