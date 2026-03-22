@@ -1,0 +1,77 @@
+# uSipipo Backend - Systemd Service Example
+# Copy this file to /etc/systemd/system/usipipo-backend.service
+# Then customize the placeholders below
+
+[Unit]
+Description=uSipipo Backend API Service
+Documentation=https://github.com/uSipipo-Team/usipipo-backend
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=exec
+
+# User and Group
+# Replace with your system user/group
+User=<SYSTEM_USER>
+Group=<SYSTEM_GROUP>
+
+# Working Directory
+# Update to your actual deployment path
+WorkingDirectory=<PATH_TO_USISIPO_BACKEND>
+
+# Environment Configuration
+# Option 1: Load from .env file (recommended)
+EnvironmentFile=<PATH_TO_USISIPO_BACKEND>/.env
+
+# Option 2: Inline environment variables (uncomment and customize if needed)
+# Environment="PYTHON_VERSION=3.13"
+# Environment="FASTAPI_ENV=production"
+# Environment="DATABASE_URL=postgresql+asyncpg://<DB_USER>:<DB_PASSWORD>@<DB_HOST>:<DB_PORT>/<DB_NAME>"
+# Environment="SECRET_KEY=<YOUR_SECRET_KEY>"
+# Environment="REDIS_URL=redis://<REDIS_HOST>:<REDIS_PORT>/<REDIS_DB>"
+
+# Python Virtual Environment
+# Update path to your virtual environment
+Environment="PATH=<PATH_TO_VENV>/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="VIRTUAL_ENV=<PATH_TO_VENV>/.venv"
+
+# Main Process
+# Using uvicorn with gunicorn workers for production
+ExecStart=<PATH_TO_VENV>/.venv/bin/uvicorn src.main:app \
+    --host 0.0.0.0 \
+    --port 8000 \
+    --workers 4 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --loop uvloop \
+    --http httptools \
+    --timeout-keep-alive 30 \
+    --access-log \
+    --no-access-log
+
+# Graceful Shutdown
+TimeoutStopSec=30
+KillMode=mixed
+KillSignal=SIGTERM
+
+# Restart Policy
+Restart=always
+RestartSec=10
+
+# Security Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=<PATH_TO_USISIPO_BACKEND>/logs
+
+# Resource Limits
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# Logging (optional - systemd journal is default)
+# StandardOutput=append:<PATH_TO_USISIPO_BACKEND>/logs/access.log
+# StandardError=append:<PATH_TO_USISIPO_BACKEND>/logs/error.log
+
+[Install]
+WantedBy=multi-user.target
