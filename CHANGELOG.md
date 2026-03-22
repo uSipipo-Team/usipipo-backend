@@ -7,18 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Pre-commit hooks for code quality (ruff, mypy, bandit, pytest)
-- GitHub Actions CI/CD pipeline
-- Development documentation (`docs/DEVELOPMENT.md`)
+---
 
-### Changed
-- Updated ruff to v0.15.6 with Python 3.13 support
-- Updated pre-commit hooks to latest versions
+## [0.3.1] - 2026-03-21
 
-### Fixed
-- Python target version corrected to 3.13
-- Mypy configuration for better module handling
+### 🔧 Changed
+
+#### Database Migrations
+- **Consolidated migrations** into single initial schema with UUID primary keys
+- Replaced multi-step migration approach with unified schema
+- All tables now use UUID primary keys for better distribution and security
+
+#### Migration Files
+- Remove: `001_consolidated_schema.py` (402 lines) - old consolidated migration
+- Remove: `731a6e4ffeb3_add_subscription_transactions_table.py` (85 lines) - incremental migration
+- Add: `a3c6f868712d_initial_schema_uuid.py` (340 lines) - new unified initial schema
+
+#### Configuration
+- Updated `alembic.ini` with organized migration file template options
+- Updated `migrations/env.py` to import all models for proper autogenerate support
+- Removed deprecated `migrations/versions/.gitkeep` file
+
+#### Infrastructure
+- Removed deprecated `deploy/usipipo-backend.service` systemd service file
+
+### 📝 Technical Details
+
+**Schema Changes:**
+- All primary keys converted to UUID format
+- Proper foreign key relationships with UUID references
+- Consistent enum types across all tables
+- Improved indexing strategy
+
+**Tables Included:**
+- users, vpn_keys, payments, data_packages
+- crypto_orders, crypto_transactions, webhook_tokens
+- subscription_plans, subscription_transactions
+- consumption_billings, consumption_invoices
+- tickets, ticket_messages, referrals, wallet_pools, wallets
 
 ---
 
@@ -259,6 +285,7 @@ src/
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 0.3.1 | 2026-03-21 | Consolidated Migrations with UUID Primary Keys |
 | 0.3.0 | 2026-03-19 | VPN Providers (Outline + WireGuard) + Infrastructure Scripts |
 | 0.2.0 | 2026-03-19 | Auth + VPN endpoints + Pre-commit/CI |
 | 0.1.0 | 2026-03-18 | Initial project structure |
@@ -278,7 +305,8 @@ Planned for next release:
 
 ---
 
-[Unreleased]: https://github.com/uSipipo-Team/usipipo-backend/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/uSipipo-Team/usipipo-backend/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/uSipipo-Team/usipipo-backend/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/uSipipo-Team/usipipo-backend/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/uSipipo-Team/usipipo-backend/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/uSipipo-Team/usipipo-backend/releases/tag/v0.1.0
