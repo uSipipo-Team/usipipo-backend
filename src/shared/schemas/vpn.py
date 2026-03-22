@@ -25,8 +25,8 @@ class VpnKeyResponse(BaseModel):
     data_used_gb: float = 0.0
     data_limit_gb: float
 
-    @computed_field
     @property
+    @computed_field
     def vpn_type(self) -> KeyType:
         """Alias para key_type (compatibilidad con API)."""
         return self.key_type
