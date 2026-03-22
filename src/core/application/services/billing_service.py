@@ -26,17 +26,18 @@ class BillingService:
 
         keys = await self.vpn_key_repo.get_by_user_id(user_id)
 
-        total_used = sum(key.data_used_gb for key in keys)
-        total_limit = sum(key.data_limit_gb for key in keys)
+        # Convertir bytes a GB
+        total_used_gb = sum(key.used_bytes / (1024**3) for key in keys)
+        total_limit_gb = sum(key.data_limit_bytes / (1024**3) for key in keys)
 
         return {
             "balance_gb": user.balance_gb,
             "total_purchased_gb": user.total_purchased_gb,
             "keys_count": len(keys),
-            "data_used_gb": round(total_used, 2),
-            "data_limit_gb": round(total_limit, 2),
+            "data_used_gb": round(total_used_gb, 2),
+            "data_limit_gb": round(total_limit_gb, 2),
             "usage_percentage": round(
-                (total_used / total_limit * 100) if total_limit > 0 else 0, 2
+                (total_used_gb / total_limit_gb * 100) if total_limit_gb > 0 else 0, 2
             ),
         }
 
@@ -50,13 +51,15 @@ class BillingService:
         if key.user_id != user_id:
             raise PermissionError("User does not own this key")
 
+        # Convertir bytes a GB
+        used_gb = key.used_bytes / (1024**3)
+        limit_gb = key.data_limit_bytes / (1024**3)
+
         return {
             "key_id": str(key.id),
             "name": key.name,
-            "data_used_gb": key.data_used_gb,
-            "data_limit_gb": key.data_limit_gb,
-            "usage_percentage": round(
-                (key.data_used_gb / key.data_limit_gb * 100) if key.data_limit_gb > 0 else 0, 2
-            ),
+            "data_used_gb": round(used_gb, 2),
+            "data_limit_gb": round(limit_gb, 2),
+            "usage_percentage": round((used_gb / limit_gb * 100) if limit_gb > 0 else 0, 2),
             "expires_at": key.expires_at.isoformat() if key.expires_at else None,
         }
