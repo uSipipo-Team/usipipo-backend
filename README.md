@@ -186,30 +186,31 @@ The API will be available at `http://localhost:8000`
 
 ## 📖 API Documentation
 
+### 🌐 GitHub Wiki (Recommended)
+
+Complete API documentation is available on our **GitHub Wiki**:
+
+👉 **[https://github.com/uSipipo-Team/usipipo-backend/wiki](https://github.com/uSipipo-Team/usipipo-backend/wiki)**
+
+**Wiki Pages:**
+- **[Home](https://github.com/uSipipo-Team/usipipo-backend/wiki)** - Quick start guide and overview
+- **[API Reference](https://github.com/uSipipo-Team/usipipo-backend/wiki/API-Reference)** - Complete endpoint reference (50+ endpoints)
+- **[Authentication](https://github.com/uSipipo-Team/usipipo-backend/wiki/Authentication)** - Auth guide with code examples
+- **[Error Codes](https://github.com/uSipipo-Team/usipipo-backend/wiki/Error-Codes)** - HTTP error reference
+
+### 📄 Local Documentation
+
+- **[docs/API.md](docs/API.md)** - Comprehensive API documentation with examples
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Architecture overview
+- **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Deployment instructions
+
+### 🧪 Interactive API Docs
+
 Once the server is running, access the interactive API documentation:
 
 - **Swagger UI:** [http://localhost:8000/docs](http://localhost:8000/docs)
 - **ReDoc:** [http://localhost:8000/redoc](http://localhost:8000/redoc)
 - **OpenAPI JSON:** [http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)
-
-### API Endpoints Overview
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/` | Root endpoint with API info |
-| `GET` | `/health` | Health check endpoint |
-| `POST` | `/api/v1/auth/login` | User authentication |
-| `POST` | `/api/v1/auth/register` | User registration |
-| `POST` | `/api/v1/vpn/keys` | Create VPN key |
-| `GET` | `/api/v1/vpn/keys/{id}` | Get VPN key details |
-| `POST` | `/api/v1/payments` | Register payment |
-| `POST` | `/api/v1/subscriptions/activate` | Activate subscription |
-| `GET` | `/api/v1/billing/invoices` | List invoices |
-| `POST` | `/api/v1/tickets` | Create support ticket |
-| `GET` | `/api/v1/wallet/balance` | Get wallet balance |
-| `POST` | `/api/v1/referrals/claim` | Claim referral bonus |
-
-For complete API documentation, see [docs/API.md](docs/API.md)
 
 ---
 
@@ -490,9 +491,20 @@ SOFTWARE.
 
 ## 🔗 Links
 
+### Documentation
+- **[GitHub Wiki](https://github.com/uSipipo-Team/usipipo-backend/wiki)** - Complete API documentation
+- **[API Reference](https://github.com/uSipipo-Team/usipipo-backend/wiki/API-Reference)** - 50+ endpoints documented
+- **[Authentication Guide](https://github.com/uSipipo-Team/usipipo-backend/wiki/Authentication)** - Auth with examples
+- **[Error Codes](https://github.com/uSipipo-Team/usipipo-backend/wiki/Error-Codes)** - HTTP error reference
+
+### Project
 - **GitHub Organization:** [uSipipo-Team](https://github.com/uSipipo-Team)
+- **Backend Repository:** [usipipo-backend](https://github.com/uSipipo-Team/usipipo-backend)
 - **Shared Library:** [usipipo-commons](https://github.com/uSipipo-Team/usipipo-commons)
 - **PyPI Package:** [usipipo-commons](https://pypi.org/project/usipipo-commons/)
+- **Latest Release:** [v0.4.0](https://github.com/uSipipo-Team/usipipo-backend/releases/tag/v0.4.0)
+
+### Services
 - **Telegram Bot:** [@uSipipo_Bot](https://t.me/uSipipo_Bot)
 - **Landing Page:** [usipipo.com](https://usipipo.com)
 
